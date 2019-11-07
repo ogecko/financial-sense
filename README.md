@@ -1,2 +1,2 @@
 # financial-sense
-Financial Market and Portfolio Analysis
+Financial Visualisation and Analysis
