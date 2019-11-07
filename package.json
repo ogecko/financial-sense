@@ -1,0 +1,24 @@
+{
+  "name": "financial-sense",
+  "version": "1.0.0",
+  "description": "Financial Visualisation and Analysis",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src-api/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ogecko/financial-sense.git"
+  },
+  "author": "David Morrison",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ogecko/financial-sense/issues"
+  },
+  "homepage": "https://github.com/ogecko/financial-sense#readme",
+  "dependencies": {
+    "apollo-datasource-rest": "^0.6.6",
+    "apollo-server": "^2.9.7"
+  }
+}
