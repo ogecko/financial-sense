@@ -5,6 +5,46 @@ type Query {
     equityList: [EquityListItem]!
     equityProfile(ticker: String!): EquityProfile
     equityProfiles(tickers: [String]!): [EquityProfile]
+    incomeStatement(ticker: String!, period: Period): [IncomeStatement]
+  }
+enum Period {
+  QUATER
+  ANNUAL
+}
+type IncomeStatement {
+    date: String
+    ticker: String
+    period: String
+    revenue: Float
+    costOfRevenue: Float
+    RDExpenses: Float
+    SGAExpenses: Float
+    operatingExpenses: Float
+    interestExpense: Float
+    incomeTaxExpense: Float
+
+    grossProfit: Float
+    operatingIncome: Float
+    EBITDA: Float
+    EBIT: Float
+    netIncomeNonControllingInterest: Float
+    netIncomeDiscontinuedOps: Float
+    consolidatedIncome: Float
+    netIncome: Float
+    sharesOutstandingAvg: Float
+    sharesOutstandingDilutedAvg: Float
+    earningsPerShare: Float
+    earningsPerShareDiluted: Float
+    dividendPerShare: Float
+    revenueGrowth: Float
+
+    grossMargin: Float
+    EBITDAMargin: Float
+    EBITMargin: Float
+    profitMargin: Float
+    freeCashFlowMargin: Float
+    earningsBeforeTaxMargin: Float
+    netProfitMargin: Float
   }
 type EquityProfile {
     "The name of the company."
