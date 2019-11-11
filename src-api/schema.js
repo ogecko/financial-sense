@@ -61,7 +61,7 @@ type EquityProfile {
     beta: Float
     volumeAvg: Float
     marketCap: Float
-    LastDividend: Float
+    lastDividend: Float
     range: String
     change: Float
     changePercent: Float
