@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pb-xs">
+  <div class="q-py-xs">
       <span class="text-grey-6">
         {{label}}
       </span>

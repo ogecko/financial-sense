@@ -1,34 +1,5 @@
 <template>
-  <div class="q-pa-sm bg-indigo-1 text-white">
-    <div class="row">
-      <div class="col-12 bg-indigo-4 q-pa-xs">
-        <q-bar>
-          <q-icon name="laptop_chromebook" />
-          <div>Tenneco Automotive</div>
-          <q-space />
-          <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
-          <q-btn dense flat icon="close" />
-        </q-bar>
-        <p>Tenneco Automotive</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-6 bg-indigo-2 q-pa-xs">
-        <q-bar>
-          <q-icon name="laptop_chromebook" />
-          <div>Historical Price Graph</div>
-          <q-space />
-          <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
-          <q-btn dense flat icon="open_in_new" />
-        </q-bar>
-        <h3>Chart</h3>
-      </div>
-      <div class="col-3 bg-blue-grey-8 q-pa-sm">
-        <equitySummary ticker="MAT" />
-      </div>
-      <div class="col-3 bg-blue-grey-9 q-pa-sm">
+    <div>
         <q-bar>
           <q-icon name="laptop_chromebook" />
           <div>Summary</div>
@@ -39,7 +10,7 @@
         </q-bar>
         <div class="row">
           <div class="col-4 q-py-sm">
-            <q-img :src="equityProfile.image" />
+            <q-img :src="equityProfile.image" :ratio="1" contain class="bg-white"/>
           </div>
           <div class="col-8 q-pl-sm text-grey-4 text-caption">
             <cell :value="equityProfile.description" />
@@ -56,19 +27,19 @@
         <cell label="Price" :value="equityProfile.price | fmt_n2d" />
         <cell label="Last Dividend" :value="equityProfile.lastDividend | fmt_n2d" />
         <cell label="Beta" :value="equityProfile.beta | fmt_n2d" />
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
 import gql from 'graphql-tag'
 import Cell from 'components/elements/Cell'
-import EquitySummary from 'components/cards/EquitySummary'
 
 export default {
-  name: 'equity',
-  components: { Cell, EquitySummary },
+  name: 'equitySummary',
+  components: { Cell },
+  props: {
+    ticker: { type: String }
+  },
   apollo: {
     equityProfile: {
       query: gql`
@@ -92,7 +63,7 @@ export default {
       `,
       variables () {
         return {
-          ticker: this.$route.params.ticker
+          ticker: this.ticker
         }
       }
     }

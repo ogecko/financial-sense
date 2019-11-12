@@ -58,6 +58,15 @@
             <q-item-label caption>Financials</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/portfolio">
+          <q-item-section avatar>
+            <q-icon name="list" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Portfolio Summary</q-item-label>
+            <q-item-label caption>Financials</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 

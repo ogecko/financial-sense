@@ -8,11 +8,11 @@
 </template>
 
 <script>
-import picker from 'components/Picker'
+import Picker from 'components/Picker'
 
 export default {
   name: 'home',
-  components: { picker },
+  components: { Picker },
   methods: {
     equityChange (ticker) {
       this.$router.push(`/equity/${ticker}`)
