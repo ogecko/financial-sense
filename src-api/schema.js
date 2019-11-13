@@ -19,14 +19,15 @@ type Equity implements Node {
   id: ID!
   ticker: String!
   profile: EquityProfile
-  incomeStmt(period: Period): IncomeStatement
-  incomeStmts(period: Period): [IncomeStatement]
+  incomeStmt(period: Period = QUARTER): IncomeStatement
+  incomeStmts(period: Period = QUARTER): [IncomeStatement]
 }
 
 enum Period {
   QUARTER
   ANNUAL
 }
+
 type IncomeStatement {
     date: String
     ticker: String

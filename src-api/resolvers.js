@@ -14,5 +14,9 @@ module.exports = {
       profile: ({ ticker }, _, { dataSources }) => dataSources.financials.getEquityProfile({ ticker }),
       incomeStmt: ({ ticker }, { period }, { dataSources }) => dataSources.financials.getIncomeStatement({ ticker, period }),
       incomeStmts: ({ ticker }, { period }, { dataSources }) => dataSources.financials.getIncomeStatements({ ticker, period }),
+    },
+    Period: {
+      ANNUAL: 'annual',
+      QUARTER: 'quarter'
     }
   };
