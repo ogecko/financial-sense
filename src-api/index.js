@@ -8,7 +8,15 @@ const server = new ApolloServer({
     resolvers,
     dataSources: () => ({
         financials: new Financials()
-    })
+    }),
+    formatError: error => {
+        console.log(error);
+        return error;
+    },
+    formatResponse: response => {
+        console.log(response.data);
+        return response;
+    },   
 });
 
 server.listen().then(({ url }) => {

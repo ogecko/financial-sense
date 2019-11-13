@@ -2,7 +2,7 @@
     <div>
         <q-bar>
           <q-icon name="laptop_chromebook" />
-          <div>Summary</div>
+          <div>{{ticker}} Summary</div>
           <q-space />
           <q-btn dense flat icon="minimize" />
           <q-btn dense flat icon="crop_square" />

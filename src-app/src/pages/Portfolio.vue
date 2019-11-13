@@ -16,7 +16,7 @@ export default {
   components: { EquitySummary },
   data () {
     return {
-      tickers: ['AFL', 'ALB', 'BIDU', 'BMRN', 'CBS', 'COF', 'DLPH', 'EPD', 'EXPE', 'MAT', 'TTM', 'OI']
+      tickers: ['ADNT', 'AFL', 'ALB', 'BIDU', 'BMRN', 'CBS', 'DLPH', 'EPD', 'EXPE', 'HBI', 'LB', 'LTHM', 'MAC', 'MAT', 'MPLX', 'OI', 'TEN', 'TTM', 'UBER']
     }
   }
 }
