@@ -29,12 +29,16 @@ class Financials extends RESTDataSource {
 
   async getIncomeStatement({ ticker, period="quarter" }) {
     const response = await this.get(`financials/income-statement/${ticker}?period=${period}`);
+    return incomeStatementReducer(ticker, period, response.financials[0]);
+  }
+
+  async getIncomeStatements({ ticker, period="quarter" }) {
+    const response = await this.get(`financials/income-statement/${ticker}?period=${period}`);
     return Array.isArray(response.financials)
         ? response.financials.map(incomeStatement => incomeStatementReducer(ticker, period, incomeStatement))
         : [];
   }
   
-
 }
 
 module.exports = Financials;

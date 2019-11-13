@@ -2,13 +2,29 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
 type Query {
+    node(id: ID!): Node
+    equity(ticker: String!): Equity
+
     equityList: [EquityListItem]!
     equityProfile(ticker: String!): EquityProfile
     equityProfiles(tickers: [String]!): [EquityProfile]
     incomeStatement(ticker: String!, period: Period): [IncomeStatement]
   }
+
+interface Node {
+  id: ID!
+}
+
+type Equity implements Node {
+  id: ID!
+  ticker: String!
+  profile: EquityProfile
+  incomeStmt(period: Period): IncomeStatement
+  incomeStmts(period: Period): [IncomeStatement]
+}
+
 enum Period {
-  QUATER
+  QUARTER
   ANNUAL
 }
 type IncomeStatement {
