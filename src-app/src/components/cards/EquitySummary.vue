@@ -5,28 +5,28 @@
           <div>{{ticker}} Summary</div>
           <q-space />
           <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
+          <q-btn dense flat :to="`/equity/${ticker}`" icon="open_in_new" />
           <q-btn dense flat icon="close" />
         </q-bar>
         <div class="row">
           <div class="col-4 q-py-sm">
-            <q-img :src="equityProfile.image" :ratio="1" contain class="bg-white"/>
+            <q-img :src="equity.profile.image" :ratio="1" contain class="bg-white"/>
           </div>
           <div class="col-8 q-pl-sm text-grey-4 text-caption">
-            <cell :value="equityProfile.description" />
+            <cell :value="equity.profile.description" />
           </div>
         </div>
         <q-separator color="grey-8"/>
-        <cell label="Exchange" :value="equityProfile.exchange" />
-        <cell label="Sector" :value="equityProfile.sector" />
-        <cell label="Industry" :value="equityProfile.industry" />
-        <cell label="CEO" :value="equityProfile.ceo" />
+        <cell label="Exchange" :value="equity.profile.exchange" />
+        <cell label="Sector" :value="equity.profile.sector" />
+        <cell label="Industry" :value="equity.profile.industry" />
+        <cell label="CEO" :value="equity.profile.ceo" />
         <q-separator color="grey-8"/>
-        <cell label="Market Cap" :value="equityProfile.marketCap | fmt_ncs" />
-        <cell label="Average Volume" :value="equityProfile.volumeAvg | fmt_ncs" />
-        <cell label="Price" :value="equityProfile.price | fmt_n2d" />
-        <cell label="Last Dividend" :value="equityProfile.lastDividend | fmt_n2d" />
-        <cell label="Beta" :value="equityProfile.beta | fmt_n2d" />
+        <cell label="Market Cap" :value="equity.profile.marketCap | fmt_ncs" />
+        <cell label="Average Volume" :value="equity.profile.volumeAvg | fmt_ncs" />
+        <cell label="Price" :value="equity.profile.price | fmt_n2d" />
+        <cell label="Last Dividend" :value="equity.profile.lastDividend | fmt_n2d" />
+        <cell label="Beta" :value="equity.profile.beta | fmt_n2d" />
     </div>
 </template>
 
@@ -41,23 +41,25 @@ export default {
     ticker: { type: String }
   },
   apollo: {
-    equityProfile: {
+    equity: {
       query: gql`
         query EquityProfile($ticker: String!) {
-          equityProfile(ticker: $ticker) {
-            name
-            description
-            exchange
-            industry
-            sector
-            image
-            ceo
-            website
-            marketCap
-            price
-            beta
-            volumeAvg
-            lastDividend
+          equity(ticker: $ticker) { 
+            profile {
+              name
+              description
+              exchange
+              industry
+              sector
+              image
+              ceo
+              website
+              marketCap
+              price
+              beta
+              volumeAvg
+              lastDividend
+            }
           }
         }
       `,
@@ -70,7 +72,7 @@ export default {
   },
   data () {
     return {
-      equityProfile: null
+      equity: { profile: {} }
     }
   },
   filters: {
