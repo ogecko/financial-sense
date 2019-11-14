@@ -1,23 +1,22 @@
 <template>
   <div>
     <q-bar>
-      <q-icon name="laptop_chromebook" />
+      <q-icon name='equalizer' />
       <div>{{ticker}} Income Statements</div>
       <q-space />
-      <q-btn dense flat icon="minimize" />
-      <q-btn dense flat :to="`/equity/${ticker}`" icon="open_in_new" />
-      <q-btn dense flat icon="close" />
+      <q-btn dense flat icon='minimize' />
+      <q-btn dense flat :to='`/equity/${ticker}`' icon='open_in_new' />
+      <q-btn dense flat icon='close' />
     </q-bar>
-    <div class="row">
-      <cell label="Count" :value="equity.incomeStmts.length | fmt_n2d" />
-      <plotly id="123" :traces="traces" :layout="layout" style="width: 100%; height: 800px" />
+    <div class='row'>
+      <plotly id='123' :traces='traces' :layout='layout' style='width: 100%; height: 800px' />
     </div>
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag'
-import Cell from 'components/elements/Cell'
+// import Cell from 'components/elements/Cell'
 import Plotly from 'components/elements/Plotly'
 
 export default {
@@ -26,7 +25,7 @@ export default {
     ticker: { type: String },
     period: { type: String, default: 'QUARTER' }
   },
-  components: { Cell, Plotly },
+  components: { Plotly },
   apollo: {
     equity: {
       query: gql`
@@ -87,6 +86,7 @@ export default {
       },
       {
         name: 'EBIT',
+        type: 'scatter',
         x: vm.equity.incomeStmts.map(is => is.date),
         y: vm.equity.incomeStmts.map(is => is.EBIT),
         line: {
@@ -96,6 +96,7 @@ export default {
       },
       {
         name: 'EBITDA',
+        type: 'scatter',
         visible: 'legendonly',
         x: vm.equity.incomeStmts.map(is => is.date),
         y: vm.equity.incomeStmts.map(is => is.EBITDA),
@@ -105,10 +106,10 @@ export default {
         }
       },
       {
-        name: '    Other Op Expenses',
+        name: '    Other Expenses',
         type: 'scatter',
         visible: 'legendonly',
-        legendgroup: 'opex',
+        // legendgroup: 'opex',
         stackgroup: 'a',
         line: { shape: 'hvh' },
         x: vm.equity.incomeStmts.map(is => is.date),
@@ -154,6 +155,7 @@ export default {
       },
       {
         name: 'Gross Profit',
+        type: 'scatter',
         x: vm.equity.incomeStmts.map(is => is.date),
         y: vm.equity.incomeStmts.map(is => is.grossProfit),
         line: {
@@ -171,18 +173,18 @@ export default {
       },
       {
         name: 'Revenue',
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { shape: 'line', width: 4 },
+        marker: { symbol: 'circle', size: 8 },
         x: vm.equity.incomeStmts.map(is => is.date),
-        y: vm.equity.incomeStmts.map(is => is.revenue),
-        line: {
-          width: 4,
-          shape: 'line'
-        }
+        y: vm.equity.incomeStmts.map(is => is.revenue)
       }
     ],
     layout: vm => ({
-      title: `${vm.ticker} - Income Statement`,
+      // title: `${vm.ticker} - Income Statement`,
       autosize: true,
-      margin: { t: 80, b: 80 },
+      margin: { t: 25, b: 80, r: 25 },
       showlegend: true,
       legend: { traceorder: 'reversed', bgcolor: 'hsl(130,10%,20%)' },
       yaxis: {
