@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-sm bg-indigo-1 text-white">
     <div class="row">
-      <div class="col-12 bg-indigo-4 q-pa-xs">
+      <div class="col-12 bg-grey-8 q-pa-xs">
         <q-bar>
           <q-icon name="laptop_chromebook" />
           <div>Tenneco Automotive</div>
@@ -14,94 +14,24 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6 bg-indigo-2 q-pa-xs">
-        <q-bar>
-          <q-icon name="laptop_chromebook" />
-          <div>Historical Price Graph</div>
-          <q-space />
-          <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
-          <q-btn dense flat icon="open_in_new" />
-        </q-bar>
-        <h3>Chart</h3>
+      <div class="col-6 bg-teal-10 q-pa-xs">
+        <equityIncomeChart :ticker="$route.params.ticker" />
       </div>
       <div class="col-3 bg-blue-grey-8 q-pa-sm">
-        <equitySummary ticker="MAT" />
-      </div>
-      <div class="col-3 bg-blue-grey-9 q-pa-sm">
-        <q-bar>
-          <q-icon name="laptop_chromebook" />
-          <div>Summary</div>
-          <q-space />
-          <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
-          <q-btn dense flat icon="close" />
-        </q-bar>
-        <div class="row">
-          <div class="col-4 q-py-sm">
-            <q-img :src="equityProfile.image" />
-          </div>
-          <div class="col-8 q-pl-sm text-grey-4 text-caption">
-            <cell :value="equityProfile.description" />
-          </div>
-        </div>
-        <q-separator color="grey-8"/>
-        <cell label="Exchange" :value="equityProfile.exchange" />
-        <cell label="Sector" :value="equityProfile.sector" />
-        <cell label="Industry" :value="equityProfile.industry" />
-        <cell label="CEO" :value="equityProfile.ceo" />
-        <q-separator color="grey-8"/>
-        <cell label="Market Cap" :value="equityProfile.marketCap | fmt_ncs" />
-        <cell label="Average Volume" :value="equityProfile.volumeAvg | fmt_ncs" />
-        <cell label="Price" :value="equityProfile.price | fmt_n2d" />
-        <cell label="Last Dividend" :value="equityProfile.lastDividend | fmt_n2d" />
-        <cell label="Beta" :value="equityProfile.beta | fmt_n2d" />
+        <equitySummary :ticker="$route.params.ticker" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import gql from 'graphql-tag'
-import Cell from 'components/elements/Cell'
 import EquitySummary from 'components/cards/EquitySummary'
+import EquityIncomeChart from 'components/cards/EquityIncomeChart'
 
 export default {
   name: 'equity',
-  components: { Cell, EquitySummary },
-  apollo: {
-    equityProfile: {
-      query: gql`
-        query EquityProfile($ticker: String!) {
-          equityProfile(ticker: $ticker) {
-            name
-            description
-            exchange
-            industry
-            sector
-            image
-            ceo
-            website
-            marketCap
-            price
-            beta
-            volumeAvg
-            lastDividend
-          }
-        }
-      `,
-      variables () {
-        return {
-          ticker: this.$route.params.ticker
-        }
-      }
-    }
-  },
-  data () {
-    return {
-      equityProfile: null
-    }
-  },
+  components: { EquitySummary, EquityIncomeChart },
+
   filters: {
     fmt_usd: v => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'USD' }).format(v),
     fmt_ncs: v => new Intl.NumberFormat('en-GB', { notation: 'compact', compactDisplay: 'short' }).format(v),

@@ -8,7 +8,8 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
       'axios',
-      'apollo'
+      'apollo',
+      'filters'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -61,7 +62,7 @@ module.exports = function (ctx) {
       // vueRouterMode: 'history',
       // showProgress: false,
       // gzip: true,
-      // analyze: true,
+      analyze: true,
       // preloadChunks: false,
       // extractCSS: false,
 

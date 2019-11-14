@@ -74,11 +74,6 @@ export default {
     return {
       equity: { profile: {} }
     }
-  },
-  filters: {
-    fmt_usd: v => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'USD' }).format(v),
-    fmt_ncs: v => new Intl.NumberFormat('en-GB', { notation: 'compact', compactDisplay: 'short' }).format(v),
-    fmt_n2d: v => new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 }).format(v)
   }
 }
 </script>
