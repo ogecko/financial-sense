@@ -36,6 +36,8 @@ type IncomeStatement {
     costOfRevenue: Float
     RDExpenses: Float
     SGAExpenses: Float
+    DAExpenses: Float
+    otherExpenses: Float
     operatingExpenses: Float
     interestExpense: Float
     incomeTaxExpense: Float
