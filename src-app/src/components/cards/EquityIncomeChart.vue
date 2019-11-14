@@ -10,7 +10,7 @@
         </q-bar>
         <div class="row">
             <cell label="Count" :value="equity.incomeStmts.length | fmt_n2d" />
-            <cell label="Date" v-for="is in equity.incomeStmts" :key="is.date" :value="is.date" />
+            <plotly :chart="chart" />
         </div>
     </div>
 </template>
@@ -18,6 +18,7 @@
 <script>
 import gql from 'graphql-tag'
 import Cell from 'components/elements/Cell'
+import Plotly from 'components/elements/Plotly'
 
 export default {
   name: 'equityIncomeChart',
@@ -25,7 +26,7 @@ export default {
     ticker: { type: String },
     period: { type: String, default: 'QUARTER' }
   },
-  components: { Cell },
+  components: { Cell, Plotly },
   apollo: {
     equity: {
       query: gql`
@@ -45,6 +46,25 @@ export default {
         }
       }
     }
+  },
+  computed: {
+    chart: vm => ({
+      uuid: '123',
+      traces: [
+        {
+          y: vm.equity.incomeStmts.map(is => is.revenue),
+          line: {
+            color: '#5e9e7e',
+            width: 4,
+            shape: 'line'
+          }
+        }
+      ],
+      layout: {
+        autosize: true,
+        margin: { t: 30, b: 30 }
+      }
+    })
   },
   data () {
     return {

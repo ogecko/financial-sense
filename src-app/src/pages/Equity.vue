@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6 bg-teal-10 q-pa-xs">
+      <div class="col-9 bg-teal-10 q-pa-xs">
         <equityIncomeChart :ticker="$route.params.ticker" />
       </div>
       <div class="col-3 bg-blue-grey-8 q-pa-sm">
