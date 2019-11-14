@@ -10,7 +10,7 @@
         </q-bar>
         <div class="row">
             <cell label="Count" :value="equity.incomeStmts.length | fmt_n2d" />
-            <plotly :chart="chart" />
+            <plotly id="123" :traces="traces" :layout="layout" style="width: 100%; height: 800px"/>
         </div>
     </div>
 </template>
@@ -48,22 +48,29 @@ export default {
     }
   },
   computed: {
-    chart: vm => ({
-      uuid: '123',
-      traces: [
-        {
-          y: vm.equity.incomeStmts.map(is => is.revenue),
-          line: {
-            color: '#5e9e7e',
-            width: 4,
-            shape: 'line'
-          }
+    traces: vm => [
+      {
+        name: 'Revenue',
+        x: vm.equity.incomeStmts.map(is => is.date),
+        y: vm.equity.incomeStmts.map(is => is.revenue),
+        line: {
+          color: '#5e9e7e',
+          width: 4,
+          shape: 'line'
         }
-      ],
-      layout: {
-        autosize: true,
-        margin: { t: 30, b: 30 }
       }
+    ],
+    layout: vm => ({
+      title: `${vm.ticker} - Income Statement`,
+      autosize: true,
+      margin: { t: 80, b: 80 },
+      showlegend: true,
+      // legend: { bgcolor: 'hsl(130,10%,20%)' },
+      yaxis: { title: { text: 'Quarterly Revenue' }, color: 'hsl(130,10%,80%)' },
+      xaxis: { title: { text: 'Reporting Date' }, color: 'hsl(130,10%,80%)' },
+      font: { color: 'hsl(130,10%,80%)' },
+      plot_bgcolor: 'hsl(130,10%,20%)',
+      paper_bgcolor: 'hsl(130,10%,17%)'
     })
   },
   data () {
