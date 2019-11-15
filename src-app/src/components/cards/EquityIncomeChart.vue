@@ -4,13 +4,12 @@
       <q-icon name='equalizer' />
       <div>{{ticker}} Income Statements</div>
       <q-space />
-      <q-btn dense flat icon='minimize' />
+      <q-btn dense flat @click="span='QUARTER'" :color="span=='QUARTER'||'grey-7'" icon='calendar_today'>1Q</q-btn>
+      <q-btn dense flat @click="span='ANNUAL'" :color="span=='ANNUAL'||'grey-7'" icon='calendar_today'>1Y</q-btn>
       <q-btn dense flat :to='`/equity/${ticker}`' icon='open_in_new' />
       <q-btn dense flat icon='close' />
     </q-bar>
-    <div class='row'>
-      <plotly id='123' :traces='traces' :layout='layout' style='width: 100%; height: 800px' />
-    </div>
+    <plotly id='123' :traces='traces' :layout='layout' style="height: 80vh;"/>
   </div>
 </template>
 
@@ -53,7 +52,7 @@ export default {
       variables () {
         return {
           ticker: this.ticker,
-          period: this.period
+          period: this.span
         }
       }
     }
@@ -194,12 +193,14 @@ export default {
       xaxis: { title: { text: 'Reporting Date' }, color: 'hsl(130,10%,80%)' },
       font: { color: 'hsl(130,10%,80%)' },
       plot_bgcolor: 'hsl(130,10%,20%)',
-      paper_bgcolor: 'hsl(130,10%,17%)'
+      paper_bgcolor: 'hsl(130,10%,17%)',
+      colorway: vm.$color.blindnessPalette
     })
   },
   data () {
     return {
-      equity: { incomeStmts: [] }
+      equity: { incomeStmts: [] },
+      span: this.period
     }
   }
 }

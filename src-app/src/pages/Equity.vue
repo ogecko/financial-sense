@@ -1,24 +1,24 @@
 <template>
-  <div class="q-pa-sm bg-indigo-1 text-white">
-    <div class="row">
-      <div class="col-12 bg-grey-8 q-pa-xs">
-        <q-bar>
-          <q-icon name="laptop_chromebook" />
-          <div>Tenneco Automotive</div>
-          <q-space />
-          <q-btn dense flat icon="minimize" />
-          <q-btn dense flat icon="crop_square" />
-          <q-btn dense flat icon="close" />
-        </q-bar>
-        <p>Tenneco Automotive</p>
+  <div class="q-pa-xs">
+    <div class="row q-col-gutter-xs">
+      <div class="col-12">
+        <div class="bg-blue-grey-9 q-pa-sm">
+          <q-bar>
+            <q-icon name="laptop_chromebook" />
+            <div>Tenneco Automotive</div>
+            <q-space />
+            <q-btn dense flat icon="minimize" />
+            <q-btn dense flat icon="crop_square" />
+            <q-btn dense flat icon="close" />
+          </q-bar>
+          <p>Tenneco Automotive</p>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-9 bg-teal-10 q-pa-sm">
-        <equityIncomeChart :ticker="$route.params.ticker" />
+      <div class="col-9">
+        <equityIncomeChart :ticker="$route.params.ticker" class="bg-blue-grey-9 q-pa-sm full-height" />
       </div>
-      <div class="col-3 bg-blue-grey-8 q-pa-sm">
-        <equitySummary :ticker="$route.params.ticker" />
+      <div class="col-3">
+        <equitySummary :ticker="$route.params.ticker" class="bg-blue-grey-9 q-pa-sm full-height" />
       </div>
     </div>
   </div>

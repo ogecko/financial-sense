@@ -1,8 +1,10 @@
 <template>
-  <div class="q-pa-sm bg-indigo-1 text-white">
-    <div class="row">
-      <div v-for="ticker in tickers" :key="ticker" class="col-3 bg-blue-grey-8 q-pa-sm">
-        <equitySummary :ticker="ticker" />
+  <div class="q-pa-xs bg-blue-grey-10 text-white">
+    <div class="row q-col-gutter-xs">
+      <div v-for="ticker in tickers" :key="ticker" class="col-3">
+        <div class="bg-blue-grey-9 q-pa-sm full-height">
+          <equitySummary :ticker="ticker" />
+        </div>
       </div>
     </div>
   </div>
