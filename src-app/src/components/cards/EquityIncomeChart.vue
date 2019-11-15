@@ -194,7 +194,7 @@ export default {
       font: { color: 'hsl(130,10%,80%)' },
       plot_bgcolor: 'hsl(130,10%,20%)',
       paper_bgcolor: 'hsl(130,10%,17%)',
-      colorway: vm.$color.blindnessPalette
+      colorway: vm.$color.clraPalette
     })
   },
   data () {

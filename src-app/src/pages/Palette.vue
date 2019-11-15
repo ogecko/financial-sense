@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-xs bg-blue-grey-10 text-white">
-    <div class="row q-col-gutter-xs">
-      <div v-for="color in palette1" :key="color" class="col-1">
-        <div class="q-pa-sm" :style="{ background: color, height: '60px' }"></div>
+    <div v-for="palette in palettes" :key="palette" class="row q-col-gutter-xs">
+      <div v-for="color in palette" :key="color">
+        <div class="q-pa-sm" :style="{ background: color, height: '40px', width: '40px' }"></div>
       </div>
     </div>
   </div>
@@ -13,8 +13,12 @@ export default {
   name: 'palette',
   data () {
     return {
-      palette1: this.$color.blindnessPalette,
-      palette2: this.$color.defaultPalette
+      palettes: [
+        this.$color.clrsPalette,
+        this.$color.clraPalette,
+        this.$color.clrbPalette,
+        this.$color.defaultPalette
+      ]
     }
   }
 }
