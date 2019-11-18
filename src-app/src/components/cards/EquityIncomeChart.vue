@@ -36,7 +36,6 @@ export default {
               costOfRevenue
               SGAExpenses
               RDExpenses
-              DAExpenses
               otherExpenses
               operatingExpenses
               interestExpense
@@ -108,21 +107,11 @@ export default {
         name: '    Other Expenses',
         type: 'scatter',
         visible: 'legendonly',
-        // legendgroup: 'opex',
-        stackgroup: 'a',
-        line: { shape: 'hvh' },
-        x: vm.equity.incomeStmts.map(is => is.date),
-        y: vm.equity.incomeStmts.map(is => is.otherExpenses)
-      },
-      {
-        name: '    Depreciation & Amortization',
-        type: 'scatter',
-        visible: 'legendonly',
         legendgroup: 'opex',
         stackgroup: 'a',
         line: { shape: 'hvh' },
         x: vm.equity.incomeStmts.map(is => is.date),
-        y: vm.equity.incomeStmts.map(is => is.DAExpenses)
+        y: vm.equity.incomeStmts.map(is => is.otherExpenses)
       },
       {
         name: '    R&D Expenses',
@@ -194,7 +183,7 @@ export default {
       font: { color: 'hsl(130,10%,80%)' },
       plot_bgcolor: 'hsl(130,10%,20%)',
       paper_bgcolor: 'hsl(130,10%,17%)',
-      colorway: vm.$color.clraPalette
+      colorway: vm.$color.clrbPalette
     })
   },
   data () {

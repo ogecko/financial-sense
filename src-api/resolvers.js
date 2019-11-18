@@ -5,6 +5,7 @@ module.exports = {
       equityProfiles: (_, { tickers }, { dataSources }) => dataSources.financials.getEquityProfiles({ tickers }),
       incomeStatement: (_, { ticker, period }, { dataSources }) => dataSources.financials.getIncomeStatement({ ticker, period }),
       equity: (_, { ticker }, __) => ({ id: ticker, ticker }),
+      findColor: (_, { needle, limit, sort, decr}, { dataSources }) => dataSources.colors.findByName(needle, limit, sort, decr)
     },
     Node: {
       id: (_, { id }, __) => ({ id }),

@@ -31,7 +31,7 @@ const clrsGray = '#aaaaaa'
 const clrsSilver = '#dddddd'
 
 const defaultPalette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-const clrbPalette = [clrbGreen, clrbOrange, clrbMarone, clrbCream, clrbMint, clrbPink, clrbPurple, clrbBlue, clrbIndigo, clrbCyan, clrbYellow, clrbTeal, clrbMint, '#d62728', '#9467bd', '#8c564b', '#7f7f7f']
+const clrbPalette = [clrbGreen, clrbOrange, clrbMarone, clrbCream, clrbMint, clrbTeal, clrbBlue, clrbIndigo, clrbCyan, clrbYellow, clrbPink, clrbMint, clrbPurple, '#d62728', '#9467bd', '#8c564b', '#7f7f7f']
 const clrsPalette = [clrsNavy, clrsBlue, clrsAqua, clrsTeal, clrsOlive, clrsGreen, clrsLime, clrsYellow, clrsOrange, clrsRed, clrsMaroon, clrsFuchsia, clrsPurple, clrsBlack, clrsGray, clrsSilver]
 const clraPalette = [clrsLime, clrsOrange, clrsRed, clrsMaroon, clrsPurple, clrsBlue, clrsAqua, clrsTeal, clrsGreen, clrsOlive, clrsYellow, clrsFuchsia, clrsBlack, clrsGray, clrsNavy, clrsSilver]
 

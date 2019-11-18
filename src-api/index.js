@@ -1,13 +1,15 @@
 const { ApolloServer } = require('apollo-server');
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
-const Financials = require('./datasources/financials');
+const Financials = require('./datasources/Financials');
+const Colors = require('./datasources/Colors');
 
 const server = new ApolloServer({ 
     typeDefs,
     resolvers,
     dataSources: () => ({
-        financials: new Financials()
+        financials: new Financials(),
+        colors: new Colors(),
     }),
     formatError: error => {
         console.log(error);
