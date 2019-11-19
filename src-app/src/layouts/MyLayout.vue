@@ -13,7 +13,8 @@
         />
 
         <q-toolbar-title>Financial Sense</q-toolbar-title>
-        <Picker @input="equityChange" />
+
+        <EquityPicker @input="equityChange" />
 
         <q-btn
           size="md"
@@ -82,11 +83,11 @@
 </template>
 
 <script>
-import Picker from 'components/Picker'
+import EquityPicker from 'components/pickers/EquityPicker'
 
 export default {
   name: 'MyLayout',
-  components: { Picker },
+  components: { EquityPicker },
   data () {
     return {
       leftDrawerOpen: false

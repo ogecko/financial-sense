@@ -1,18 +1,18 @@
 <template>
   <div>
     <h1>Home</h1>
-    <picker
+    <EquityPicker
       @input="equityChange"
     />
   </div>
 </template>
 
 <script>
-import Picker from 'components/Picker'
+import EquityPicker from 'components/pickers/EquityPicker'
 
 export default {
   name: 'home',
-  components: { Picker },
+  components: { EquityPicker },
   methods: {
     equityChange (ticker) {
       this.$router.push(`/equity/${ticker}`)

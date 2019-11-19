@@ -16,14 +16,17 @@
         <div class="q-pa-sm" :style="{ background: color, height: '40px', width: '40px' }"></div>
       </div>
     </div>
+    <ColorChart name="age" class="bg-blue-grey-9 q-pa-sm full-height" />
   </div>
 </template>
 
 <script>
 import Color from 'color'
+import ColorChart from 'components/cards/ColorChart'
 
 export default {
   name: 'palette',
+  components: { ColorChart },
   computed: {
     lighter: vm => [0.4, 0.3, 0.2, 0.1, 0].map(x => Color(vm.hexa).lighten(x).hex()),
     darker: vm => [0.0, 0.2, 0.4, 0.6, 0.8].map(x => Color(vm.hexa).darken(x).hex()),

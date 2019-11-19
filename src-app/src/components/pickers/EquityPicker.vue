@@ -34,7 +34,7 @@ import gql from 'graphql-tag'
 const extractString = e => `${e.ticker} - ${e.name}`.slice(0, 30)
 const extractOption = e => ({ label: extractString(e), ticker: e.ticker })
 const sortOptions = (a, b) => a.ticker > b.ticker ? 1 : a.ticker < b.ticker ? -1 : 0
-const isOptionMatch = (e, needle) => extractString(e).toLowerCase().indexOf(needle) > -1
+const isOptionMatch = (e, needle) => extractString(e).toLowerCase().indexOf(needle.toLowerCase()) > -1
 
 export default {
   name: 'picker',
@@ -59,8 +59,7 @@ export default {
         })
       } else {
         update(() => {
-          const needle = val.toLowerCase()
-          this.visibleOptions = this.equityList.filter(e => isOptionMatch(e, needle)).map(extractOption).sort(sortOptions)
+          this.visibleOptions = this.equityList.filter(e => isOptionMatch(e, val)).map(extractOption).sort(sortOptions)
         })
       }
     }
