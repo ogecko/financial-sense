@@ -25,7 +25,7 @@ class Colors {
             .slice(0, limit)
     }
 
-    // find a color by matching hex code, returns null if no named color matches
+    // find a single color by matching either hex code or color name, falling back to color hex code
     findByName (needle) {
         const directMatch = this.colornames.filter(e => lc(e.hex) == lc(needle) || lc(e.name) == lc(needle) )
         return (directMatch.length > 0) ? directMatch[0] 

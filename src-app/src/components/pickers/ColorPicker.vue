@@ -1,18 +1,34 @@
 <template>
   <div>
     <q-btn :label="color.name" icon="color_lens" :style="{ background: this.color.hex, color: this.color.textColors[3] }">
-      <q-popup-proxy transition-show="scale" transition-hide="scale">
-        <div class="row" :style="{ background: this.color.hex, color: this.color.textColors[1] }">
-            <h2>{{color.name}}</h2>
-            <p :style="{ background: this.color.hex, color: this.color.textColors[4] }">
-                {{color.hex}}
-            </p>
-        </div>
-        <div class="row">
-            <div class="col q-pa-xs" v-for="t in color.textColors" :key="t">
-                {{t}}
-            </div>
-        </div>
+      <q-popup-proxy transition-show="scale" transition-hide="scale" >
+        <q-card bordered :style="{ maxWidth: '660px', background: this.color.hex, color: this.color.textColors[4] }">
+          <q-card-section>
+              <div class="col-12 text-h2 text-weight-bold">{{color.name}}</div>
+              <div class="col-12 text-subtitle2 text-right" :style="{ color: this.color.textColors[5] }">
+                  {{color.hex}}
+              </div>
+            <q-input
+              v-model="search" :style="{ color: this.color.textColors[4] }"
+              debounce="500"
+              filled
+              placeholder="Search">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </q-card-section>
+          <q-card-section>
+              <div class="row">
+                <div v-for="c in colors" :key="c.hex" @click="value=c.hex"
+                class="col-1 text-weight-thin q-pa-xs shadow-1"
+                :style="{  background: c.hex, color: c.textColors[0] }">
+                  <div style="font-size: 0.65rem; height: 2.4rem; overflow: hidden; line-height: 1.2">{{c.name}}</div>
+                </div>
+              </div>
+          </q-card-section>
+
+        </q-card>
       </q-popup-proxy>
     </q-btn>
   </div>
@@ -20,6 +36,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { layoutColors } from '../cards/colorCalcs'
 
 export default {
   name: 'colorPicker',
@@ -45,7 +62,7 @@ export default {
       `,
       variables () {
         return {
-          hex: this.hex
+          hex: this.value
         }
       }
     },
@@ -61,6 +78,7 @@ export default {
             h
             C
             s
+            textColors
           }
         }
       `,
@@ -70,12 +88,13 @@ export default {
           limit: 300
         }
       },
-      update: data => data.findColor
+      update: data => layoutColors(data.findColor)
     }
   },
   data () {
     return {
-      search: '',
+      search: 'rose',
+      value: this.hex,
       color: { textColors: [] },
       colors: []
     }

@@ -11,8 +11,8 @@ export function layoutColors (colors) {
   const minJ = minValue(colors, lightness)
   const maxM = maxValue(colors, colorfulness)
   const minM = minValue(colors, colorfulness)
-  const stepJ = (maxJ === minJ) ? 10 : (maxJ - minJ) / 10
-  const stepM = (maxM === minM) ? 10 : (maxM - minM) / 10
+  const stepJ = (maxJ === minJ) ? 10 : (maxJ - minJ) / 11
+  const stepM = (maxM === minM) ? 10 : (maxM - minM) / 9
   const results = []
   const remaining = _.filter(colors, c => true)
   for (var x = 0, M = minM; M <= maxM; x++, M += stepM) {
