@@ -5,18 +5,19 @@ const colorfulness = c => c && c.M
 const maxValue = (arr, lensFn) => lensFn(_.maxBy(arr, lensFn))
 const minValue = (arr, lensFn) => lensFn(_.minBy(arr, lensFn))
 const deltaE = (J, M, c) => Math.sqrt((J - c.J) * (J - c.J) + (M - c.M) * (M - c.M))
+const EPSILON = 0.0001
 
 export function layoutColors (colors) {
   const maxJ = maxValue(colors, lightness)
   const minJ = minValue(colors, lightness)
   const maxM = maxValue(colors, colorfulness)
   const minM = minValue(colors, colorfulness)
-  const stepJ = (maxJ === minJ) ? 10 : (maxJ - minJ) / 11
-  const stepM = (maxM === minM) ? 10 : (maxM - minM) / 9
+  const stepJ = (maxJ === minJ) ? 10 : (maxJ - minJ) / 12
+  const stepM = (maxM === minM) ? 10 : (maxM - minM) / 8
   const results = []
   const remaining = _.filter(colors, c => true)
-  for (var x = 0, M = minM; M <= maxM; x++, M += stepM) {
-    for (var y = 0, J = maxJ; J >= minJ; y++, J -= stepJ) {
+  for (var x = 0, M = minM; M <= maxM + EPSILON; x++, M += stepM) {
+    for (var y = 0, J = maxJ; J >= minJ + EPSILON; y++, J -= stepJ) {
       const pick = _.chain(remaining)
         .map(c => ({ ...c, deltaE: deltaE(J, M, c) }))
         .sortBy(c => c.deltaE)
