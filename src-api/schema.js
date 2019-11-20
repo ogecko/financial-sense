@@ -4,6 +4,7 @@ const typeDefs = gql`
 type Query {
     node(id: ID!): Node
     equity(ticker: String!): Equity
+    color(hex: String!): Color
 
     equityList: [EquityListItem]!
     equityProfile(ticker: String!): EquityProfile
@@ -68,6 +69,9 @@ type Color {
 
   "Blue-Yellow component (CAM16 Uniform Color Space). [-42 to 37]. +ve yellow -ve blue. Related to Mu and Hue but in cartesian co-ordinates for color differences calculations DeltaE."
   b: Float
+
+  "A list of five hex codes suitable for contrasting text over the background color, in decreasing contrast"
+  textColors: [String!]!
 }
 
 type IncomeStatement {

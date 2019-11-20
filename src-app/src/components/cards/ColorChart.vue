@@ -6,13 +6,14 @@
       <q-space />
       <q-btn dense flat icon="close" />
     </q-bar>
-    <plotly id="123" :traces="traces" :layout="layout" style="height: 80vh;" />
+    <plotly id="123" :traces="traces" :layout="layout" style="height: 65vh;" />
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag'
 import Plotly from 'components/elements/Plotly'
+import { layoutColors } from './colorCalcs'
 
 export default {
   name: 'colorChart',
@@ -42,7 +43,7 @@ export default {
           limit: 300
         }
       },
-      update: data => data.findColor
+      update: data => layoutColors(data.findColor)
     }
   },
   computed: {
@@ -51,14 +52,15 @@ export default {
         name: 'Colors',
         type: 'scatter',
         mode: 'markers+text',
+        textposition: 'center',
         id: vm.colors.map(c => c.hex),
         marker: {
-          size: vm.colors.map(c => c.M),
+          size: 70, // vm.colors.map(c => c.M),
           color: vm.colors.map(c => c.hex)
         },
         text: vm.colors.map(c => c.name),
-        x: vm.colors.map(c => c.M),
-        y: vm.colors.map(c => c.J)
+        x: vm.colors.map(c => c.x),
+        y: vm.colors.map(c => c.y)
       }
     ],
     layout: vm => ({
@@ -72,7 +74,7 @@ export default {
         color: 'hsl(130,10%,80%)'
       },
       xaxis: {
-        title: { text: 'h Hue' },
+        title: { text: 'M Colorfulness' },
         color: 'hsl(130,10%,80%)'
       },
       font: { color: 'hsl(130,10%,80%)' },

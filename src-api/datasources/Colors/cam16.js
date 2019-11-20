@@ -61,6 +61,7 @@ const elem_mul = function elem_mul(v0, v1) {
     for (let i = 0; i < n; i++) { prod[i] = v0[i] * v1[i]; }
     return prod;
 }
+const is_hex_code = s => /^#?[0-9a-fA-F]{6}$/.test(s)
 const gamma = (x) => (x <= 0) ? 0 :
     (x > 0.0031308) * (1.055 * Math.pow(x, 0.4166666666666667) - 0.055) +
     (x <= 0.0031308) * 12.92 * x
@@ -154,7 +155,7 @@ const A_w = N_bb * (2 * RGB_aw[0] + RGB_aw[1] + 0.05 * RGB_aw[2])
 // hex - String RGB hex value #RRGGBB eg '#800000' = Maroon
 // sRGB - Array[3 x 1] where R, G, B range from [0 to 1]
 const hex_to_srgb = function hex_to_srgb(hex) {
-    if (!/^#?[0-9a-fA-F]{6}$/.test(hex)) {
+    if (! is_hex_code(hex)) {
         throw new Error('Bad Input: Must be of form "666FAD" or "#DEFACE"');
     }
     const RGB = parseInt(hex.substr(-6), 16);
@@ -363,6 +364,7 @@ module.exports = {
     Jsh_to_hex,
 
     // Utility functions
+    is_hex_code,
     deltaE,
     srgb_in_gamut,
     hex_to_srgb,

@@ -1,8 +1,10 @@
-const { hex_to_cam16_ucs } = require('./cam16')
+const { hex_to_cam16_ucs, JMh_to_hex, is_hex_code } = require('./cam16')
 
 // Read in all the colornames and append the CAM16 values
 const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
 const isMatch = (e, needle) => e.name.toLowerCase().indexOf(needle.toLowerCase()) > -1
+const range = (start, stop, step=1) => Array(Math.abs(Math.ceil((stop-start)/step))).fill(start).map( (x,y) => x + y * step)
+const lc = s => s.toLowerCase(s)
 
 // lighten, darken, saturate, desaturate, rotate
 
@@ -12,7 +14,7 @@ class Colors {
     }
 
     // find an Arrray of colors by partial name match
-    findByName (needle, limit=10, sort = "M", decr = true) {
+    searchByName (needle, limit=10, sort = "M", decr = true) {
         if (! /(J|M|h|s|C|Q|Ju|Mu)/.test(sort)) {
             throw new Error(
                 'color find by name sort field must be J, M, h, s, C, Q, Ju or Mu.');
@@ -24,11 +26,29 @@ class Colors {
     }
 
     // find a color by matching hex code, returns null if no named color matches
-    findByHex (hex) {
-        const directMatch = this.colornames.filter(e => e.hex.toLowerCase() == hex.toLowerCase())
-        return (directMatch.length > 0) ? directMatch[0] : null
+    findByName (needle) {
+        const directMatch = this.colornames.filter(e => lc(e.hex) == lc(needle) || lc(e.name) == lc(needle) )
+        return (directMatch.length > 0) ? directMatch[0] 
+            : is_hex_code(needle) ? { ...hex_to_cam16_ucs(needle), hex: needle, name: needle }
+            : null
     }
 
+    // find text colors that contrast with the color
+    findTextColors (c) {
+        const baseTextColor = (c.J > 50) ? '#000000' : '#FFFFFF'
+        const start = 255, stop = 128
+        const step = Math.ceil((stop - start ) / 5)
+        const result = range(start, stop, step).map(alpha => baseTextColor + alpha.toString(16))
+        return result
+
+        // Alternate implementation based on asjusting J
+        // const startJ = (c.J > 50) ? 00 : 99
+        // const stopJ = c.J
+        // const stepJ = (stopJ - startJ)/5 
+        // const result = range(startJ, stopJ, stepJ).map(J => JMh_to_hex({ J, M:0, h:c.h }))
+        // return result
+    }
+    
     // find a named color with peak M colorfulness for a given h hue (ensuring a selection from at least 30)
     findPeakColorByHue(h, delta=0.5, debug=false) {
         const results = colornames

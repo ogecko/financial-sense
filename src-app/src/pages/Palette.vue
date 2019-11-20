@@ -1,32 +1,23 @@
 <template>
   <div class="q-pa-xs bg-blue-grey-10 text-white">
-    <div v-for="palette in palettes" :key="palette" class="row q-col-gutter-xs">
-      <div v-for="color in palette" :key="color">
-        <div class="q-pa-sm" :style="{ background: color, height: '40px', width: '40px' }"></div>
-      </div>
-    </div>
-
-    <q-btn label="Color" icon="color_lens" :style="{ background: this.hexa }">
-      <q-popup-proxy transition-show="scale" transition-hide="scale">
-        <q-color v-model="hexa" :palette="palette"/>
-      </q-popup-proxy>
-    </q-btn>
-    <div class="row q-col-gutter-xs">
-      <div v-for="color in lighter" :key="color">
-        <div class="q-pa-sm" :style="{ background: color, height: '40px', width: '40px' }"></div>
-      </div>
-    </div>
-    <ColorChart name="age" class="bg-blue-grey-9 q-pa-sm full-height" />
+    <ColorPicker hex="Dark Crypt" />
+    <ColorPicker hex="Allura Red" />
+    <ColorPicker hex="Pale Ale" />
+    <ColorPicker hex="#245878" />
+    <ColorPicker hex="#de7e5d" />
+    <ColorPicker :hex="hexa" />
+    <ColorChart name="dav" class="bg-blue-grey-9 q-pa-sm" />
   </div>
 </template>
 
 <script>
 import Color from 'color'
 import ColorChart from 'components/cards/ColorChart'
+import ColorPicker from 'components/pickers/ColorPicker'
 
 export default {
   name: 'palette',
-  components: { ColorChart },
+  components: { ColorChart, ColorPicker },
   computed: {
     lighter: vm => [0.4, 0.3, 0.2, 0.1, 0].map(x => Color(vm.hexa).lighten(x).hex()),
     darker: vm => [0.0, 0.2, 0.4, 0.6, 0.8].map(x => Color(vm.hexa).darken(x).hex()),
@@ -41,7 +32,7 @@ export default {
   },
   data () {
     return {
-      hexa: '#FF00FFCC',
+      hexa: '#0000FF',
       palettes: [
         this.$color.clrsPalette,
         this.$color.clraPalette,
