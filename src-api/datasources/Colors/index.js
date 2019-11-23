@@ -3,18 +3,22 @@ const { hex_to_cam16_ucs, JMh_to_hex, is_hex_code } = require('./cam16')
 // Read in all the colornames and append the CAM16 values
 const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
 const isMatch = (e, needle) => e.name.toLowerCase().indexOf(needle.toLowerCase()) > -1
-const range = (start, stop, step=1) => Array(Math.abs(Math.ceil((stop-start)/step))).fill(start).map( (x,y) => x + y * step)
+const range = (start, stop, step = 1) => Array(Math.abs(Math.ceil((stop - start) / step))).fill(start).map((x, y) => x + y * step)
 const lc = s => s.toLowerCase(s)
+const c360 = h => (h + 360) % 360
+const isCircularTopOnly = (hT, hB) => (hT.min && hT.max && !hB.min && !hB.max)
+const isCircularBottomOnly = (hT, hB) => (!hT.min && !hT.max && hB.min && hB.max)
+const isCircularRightOnly = (hT, hB) => (hB.min - hT.max) > (hT.min + 360 - hB.max)
 
 // lighten, darken, saturate, desaturate, rotate
 
 class Colors {
     constructor() {
-      this.colornames = colornames;
+        this.colornames = colornames;
     }
 
     // find an Arrray of colors by partial name match
-    searchByName (needle, limit=10, sort = "M", decr = true) {
+    searchByName(needle, limit = 10, sort = "M", decr = true) {
         if (! /(J|M|h|s|C|Q|Ju|Mu)/.test(sort)) {
             throw new Error(
                 'color find by name sort field must be J, M, h, s, C, Q, Ju or Mu.');
@@ -26,18 +30,18 @@ class Colors {
     }
 
     // find a single color by matching either hex code or color name, falling back to color hex code
-    findByName (needle) {
-        const directMatch = this.colornames.filter(e => lc(e.hex) == lc(needle) || lc(e.name) == lc(needle) )
-        return (directMatch.length > 0) ? directMatch[0] 
+    findByName(needle) {
+        const directMatch = this.colornames.filter(e => lc(e.hex) == lc(needle) || lc(e.name) == lc(needle))
+        return (directMatch.length > 0) ? directMatch[0]
             : is_hex_code(needle) ? { ...hex_to_cam16_ucs(needle), hex: needle, name: needle }
-            : null
+                : null
     }
 
     // find text colors that contrast with the color
-    findTextColors (c) {
+    findTextColors(c) {
         const baseTextColor = (c.J > 50) ? '#000000' : '#FFFFFF'
         const start = 255, stop = 128
-        const step = Math.ceil((stop - start ) / 5)
+        const step = Math.ceil((stop - start) / 5)
         const result = range(start, stop, step).map(alpha => baseTextColor + alpha.toString(16))
         return result
 
@@ -48,22 +52,97 @@ class Colors {
         // const result = range(startJ, stopJ, stepJ).map(J => JMh_to_hex({ J, M:0, h:c.h }))
         // return result
     }
-    
+
     // find a named color with peak M colorfulness for a given h hue (ensuring a selection from at least 30)
-    findPeakColorByHue(h, delta=0.5, debug=false) {
+    findPeakColorByHue(h, delta = 0.5, debug = false) {
         const results = colornames
             .filter(x => h - delta < x.h && x.h < h + delta)
-            .sort((x, y)=> y.M - x.M)
-            if (debug) console.log(`${h}, ${delta}, ${results.length}, ${results[0].M}, ${results[0].J}, ${results[0].hex}, ${results[0].name}`)
-            return (results.length > 30) ? results[0] : this.findPeakColorByHue(h, delta*2, debug)
+            .sort((x, y) => y.M - x.M)
+        if (debug) console.log(`${h}, ${delta}, ${results.length}, ${results[0].M}, ${results[0].J}, ${results[0].hex}, ${results[0].name}`)
+        return (results.length > 30) ? results[0] : this.findPeakColorByHue(h, delta * 2, debug)
     }
 
+    linearMinMaxReducer(acc, x) {
+        if (x > acc.max || !acc.max) acc.max = x
+        if (x < acc.min || !acc.min) acc.min = x
+        return acc
+    }
 
-    lighterColors (hex, limit=10) {
+    circularMinMaxDecider(hT, hB) {
+        return isCircularTopOnly(hT, hB) ? { min: hT.min, max: hT.max }
+            : isCircularBottomOnly(hT, hB) ? { min: hB.min, max: hB.max }
+                : isCircularRightOnly(hT, hB) ? { min: hB.min, max: hT.max }
+                    : { min: hT.min, max: hB.max }
+    }
+
+    minMaxHues(hues) {
+        const hT = hues.filter(x => x < 180).reduce(this.linearMinMaxReducer, {})
+        const hB = hues.filter(x => x >= 180).reduce(this.linearMinMaxReducer, {})
+        return this.circularMinMaxDecider(hT, hB)
+    }
+
+    minMaxLinearDelta({ mid, delta }) {
+        return { min: mid - delta, max: mid + delta }
+    }
+
+    minMaxCircularDelta({ mid, delta }) {
+        return this.minMaxHues([ c360(mid - delta), c360(mid), c360(mid + delta) ])
+    }
+
+    minMaxJMhColors(colors) {
+        const J = colors.map(c => c.J).reduce(this.linearMinMaxReducer, {})
+        const M = colors.map(c => c.M).reduce(this.linearMinMaxReducer, {})
+        const h = this.minMaxHues(colors.map(c => c360(c.h)))
+        return { J, M, h }
+    }
+
+    isColorMatchingName(c, needle) {
+        return lc(c.name) === lc(needle) || lc(c.hex) === lc(needle)
+    }
+
+    isColorMatchingSearch(c, needle) {
+        return lc(c.name).indexOf(lc(needle)) > -1
+    }
+
+    isInsideLinearRange(x, q) {
+        return (x >= q.min) && (x <= q.max)
+    }
+
+    isInsideCircularRange(x, q) {
+        return (q.min <= q.max) ? this.isInsideLinearRange(x, q) : (x >= q.min) || (x <= q.max) 
+    }
+
+    isColorMatchingQueryFn({ J, M, h, search, name }) {
+        const Jq = (J && J.mid && J.delta) ? this.minMaxLinearDelta(J) : J
+        const Mq = (M && M.mid && M.delta) ? this.minMaxLinearDelta(M) : M
+        const hq = (h && h.mid && h.delta) ? this.minMaxCircularDelta(h) : h
+        return c => ! (
+            ((Jq && Jq.min && Jq.max) && ! this.isInsideLinearRange(c.J, Jq)) ||
+            ((Mq && Mq.min && Mq.max) && ! this.isInsideLinearRange(c.M, Mq)) ||
+            ((hq && hq.min && hq.max) && ! this.isInsideCircularRange(c.h, hq)) ||
+            ((search) && ! this.isColorMatchingSearch(c, search)) ||
+            ((name) && ! this.isColorMatchingName(c, name))
+        )
+    }
+
+    // linearRange(obj) {
+    //     // calculate the min and max based on midpoint +/- delta
+    //     if (obj.mid && obj.delta) {
+    //         obj.min -= obj.delta
+    //         obj.max += obj.delta
+    //     }
+    //     // calculate the step size
+    //     if (obj.n) {
+    //         obj.step = (obj.min === obj.max) ? 10 : (obj.max - obj.min) / obj.n
+    //     }
+    //     return obj
+    // }
+
+    lighterColors(hex, limit = 10) {
         const base_color = hex_to_cam16_ucs(hex)
         const results = colornames
             .filter(x => h - delta < x.h && x.h < h + delta)
-            .sort((x, y)=> y.M - x.M)
+            .sort((x, y) => y.M - x.M)
 
     }
 }
