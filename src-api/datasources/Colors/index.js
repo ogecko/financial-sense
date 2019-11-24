@@ -134,21 +134,21 @@ class Colors {
         )
     }
 
-    // Creates an array of numbers progressing from min up to max depending on 'step' | 'n' | 'rotate'. 
+    // Creates an array of numbers progressing from start up to stop depending on 'step' | 'n' | 'rotate'. 
     // A 'step' defines how far apart each number is from the previous number, excludes the max value
     // An 'n' defines the how many numbers to return in the array, includes the max value
-    // A 'rotate' is similar to step but returns 0-360 numbers. max can be 350 and min 10 to rotate past 0'
-    range({ min, max, step, n, rotate }) {
+    // A 'rotate' is similar to step but returns 0-360 numbers. start can be 350 and stop 10 to rotate past 0'
+    range({ start, stop, step, n, rotate }) {
         if (step) {
-            n = Math.abs(Math.ceil((max - min) / step))
+            n = Math.abs(Math.ceil((stop - start) / step))
         } else if (n) {
-            step = (n > 1) ? (max - min) / (n - 1) : 100
+            step = (n > 1) ? (stop - start) / (n - 1) : 100
         } else if (rotate) {
-            const range = (max > min) ? max - min : max + 360 - min
+            const span = (rotate > 0) ? c360(stop - start + 360) : c360(start - stop + 360)
             step = rotate
-            n = Math.abs(Math.ceil(range / step))
+            n = Math.abs(Math.ceil(span / step))
         }
-        return Array(n).fill(min).map((x, y) => x + y * step).map(x => rotate ? c360(x) : x)
+        return Array(n).fill(start).map((x, y) => x + y * step).map(x => rotate ? c360(x) : x)
     }
 
     // Recursively return an arrange of objects expanding any ranges of J, M or h
@@ -179,6 +179,11 @@ class Colors {
         return colornames
             .filter(isMatch)
             .sort((x, y) => y.J - x.J)
+    }
+
+    darkerColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16_ucs(hex)
+        return this.rangeJMh({ J: { min: 0, max: J, n: 10 }, M, h }).map(c => this.pickColor(c))
     }
 }
 

@@ -166,39 +166,56 @@ describe('datasource/colors/index unit tests', () => {
         expect(isMatch(marsBrownColor)).toEqual(false);
     });
 
-    test('range creates an array of numbers progressing from min up to, but not including, max', () => {
-        expect(colors.range({ min: 10, max: 15, step: 2 })).toEqual([10, 12, 14]);
+    test('range creates an array of numbers from 10 to 15 (excluding) with a step of 2', () => {
+        expect(colors.range({ start: 10, stop: 15, step: 2 })).toEqual([10, 12, 14]);
     });
 
-    test('range creates an array of 2 evenly spaced numbers from min to max inclusive', () => {
-        expect(colors.range({ min: 10, max: 20, n: 2 })).toEqual([10, 20]);
+    test('range creates an array of numbers from 15 to 10 (excluding) with a step of -2', () => {
+        expect(colors.range({ start: 15, stop: 10, step: -2 })).toEqual([15, 13, 11]);
     });
 
-    test('range creates an array of 11 evenly spaced numbers from min to max inclusive', () => {
-        expect(colors.range({ min: 10, max: 20, n: 11 })).toEqual([10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+    test('range creates an array of 2 evenly spaced numbers from 10 to 20 inclusive', () => {
+        expect(colors.range({ start: 10, stop: 20, n: 2 })).toEqual([10, 20]);
     });
 
-    test('range creates an array of numbers rotating from min up to, but not including, max, for circular numbers', () => {
-        expect(colors.range({ min: 350, max: 10.1, rotate: 5 })).toEqual([350, 355, 0, 5, 10]);
+    test('range creates an array of 11 evenly spaced numbers from start to stop inclusive', () => {
+        expect(colors.range({ start: 10, stop: 20, n: 11 })).toEqual([10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
     });
+
+    test('range creates an array of 2 evenly spaced numbers from 20 to 10 inclusive', () => {
+        expect(colors.range({ start: 20, stop: 10, n: 3 })).toEqual([20, 15, 10]);
+    });
+
+    test('range creates an array of numbers rotating from 20 to 60 with a step of 10, for circular numbers', () => {
+        expect(colors.range({ start: 20, stop: 61, rotate: 10 })).toEqual([20, 30, 40, 50, 60 ]);
+    });
+
+    test('range creates an array of numbers rotating from 350 to 10 with a step of 5, for circular numbers', () => {
+        expect(colors.range({ start: 350, stop: 10.1, rotate: 5 })).toEqual([350, 355, 0, 5, 10]);
+    });
+
+    test('range creates an array of numbers rotating from 10 to 350 with a step of -5, for circular numbers', () => {
+        expect(colors.range({ start: 10, stop: 349, rotate: -5 })).toEqual([10, 5, 0, 355]);
+    });
+
 
     test('rangeOfJMh creates an array of 5 evenly spaced colors with differing hue', () => {
-        expect(colors.rangeOfJMh({ J: 20, M:6, h: { min: 350, max: 10.1, rotate: 5 }}))
+        expect(colors.rangeOfJMh({ J: 20, M:6, h: { start: 350, stop: 10.1, rotate: 5 }}))
             .toEqual([{J: 20, M: 6, h: 350}, {J: 20, M: 6, h: 355}, {J: 20, M: 6, h: 0}, {J: 20, M: 6, h: 5}, {J: 20, M: 6, h: 10}]);
     });
 
     test('rangeOfJMh creates an array of 3 evenly spaced colors with differing colorfulness, undefined hue', () => {
-        expect(colors.rangeOfJMh({ J: 50, M: { min: 10, max: 12, n: 3 }}))
+        expect(colors.rangeOfJMh({ J: 50, M: { start: 10, stop: 12, n: 3 }}))
             .toEqual([{ J: 50, M: 10 }, { J: 50, M: 11 }, { J: 50, M: 12 }]);
     });
 
     test('rangeOfJMh creates an array of 3 evenly spaced colors with differing colorfulness', () => {
-        expect(colors.rangeOfJMh({ J: 50, M: { min: 10, max: 12, n: 3 }, h: 270  }))
+        expect(colors.rangeOfJMh({ J: 50, M: { start: 10, stop: 12, n: 3 }, h: 270  }))
             .toEqual([{ J: 50, M: 10, h: 270 }, { J: 50, M: 11, h: 270 }, { J: 50, M: 12, h: 270 }]);
     });
 
     test('rangeOfJMh creates three arrays of a sequence of 2 evenly spaced colors with differing lightness and colorfulness', () => {
-        expect(colors.rangeOfJMh({ J: { min: 80, max: 90, n: 2 }, M: { min: 10, max: 12, n: 3 }, h: 270 }))
+        expect(colors.rangeOfJMh({ J: { start: 80, stop: 90, n: 2 }, M: { start: 10, stop: 12, n: 3 }, h: 270 }))
             .toEqual([
                 [{"J": 80, "M": 10, "h": 270}, {"J": 90, "M": 10, "h": 270}], 
                 [{"J": 80, "M": 11, "h": 270}, {"J": 90, "M": 11, "h": 270}], 
