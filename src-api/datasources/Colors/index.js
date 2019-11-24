@@ -1,14 +1,16 @@
+const _ = require('lodash')
+
 const { hex_to_cam16_ucs, JMh_to_hex, is_hex_code } = require('./cam16')
 
 // Read in all the colornames and append the CAM16 values
 const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
-const isMatch = (e, needle) => e.name.toLowerCase().indexOf(needle.toLowerCase()) > -1
 const range = (start, stop, step = 1) => Array(Math.abs(Math.ceil((stop - start) / step))).fill(start).map((x, y) => x + y * step)
 const lc = s => s.toLowerCase(s)
 const c360 = h => (h + 360) % 360
 const isCircularTopOnly = (hT, hB) => (hT.min && hT.max && !hB.min && !hB.max)
 const isCircularBottomOnly = (hT, hB) => (!hT.min && !hT.max && hB.min && hB.max)
 const isCircularRightOnly = (hT, hB) => (hB.min - hT.max) > (hT.min + 360 - hB.max)
+const EPSILON = 0.000001
 
 // lighten, darken, saturate, desaturate, rotate
 
@@ -23,8 +25,9 @@ class Colors {
             throw new Error(
                 'color find by name sort field must be J, M, h, s, C, Q, Ju or Mu.');
         }
+        const isMatch = this.isColorMatchingQueryFn({ search: needle })
         return this.colornames
-            .filter(e => isMatch(e, needle))
+            .filter(isMatch)
             .sort((x, y) => decr ? y[sort] - x[sort] : x[sort] - y[sort])
             .slice(0, limit)
     }
@@ -62,12 +65,14 @@ class Colors {
         return (results.length > 30) ? results[0] : this.findPeakColorByHue(h, delta * 2, debug)
     }
 
+    // Reducer function used to compute the maximum and minimum value of array. 
     linearMinMaxReducer(acc, x) {
         if (x > acc.max || !acc.max) acc.max = x
         if (x < acc.min || !acc.min) acc.min = x
         return acc
     }
 
+    // Decider function to compute the maximum and minimum value of array of numbers depending on which quadrant. 
     circularMinMaxDecider(hT, hB) {
         return isCircularTopOnly(hT, hB) ? { min: hT.min, max: hT.max }
             : isCircularBottomOnly(hT, hB) ? { min: hB.min, max: hB.max }
@@ -75,20 +80,24 @@ class Colors {
                     : { min: hT.min, max: hB.max }
     }
 
+    // Computes the maximum and minimum value of array of numbers between 0 and 360. 
     minMaxHues(hues) {
         const hT = hues.filter(x => x < 180).reduce(this.linearMinMaxReducer, {})
         const hB = hues.filter(x => x >= 180).reduce(this.linearMinMaxReducer, {})
         return this.circularMinMaxDecider(hT, hB)
     }
 
+    // Conputes the maximum and minimum value around a mid point
     minMaxLinearDelta({ mid, delta }) {
         return { min: mid - delta, max: mid + delta }
     }
 
+    // Conputes the maximum and minimum value around a mid point with numbers between 0 and 360
     minMaxCircularDelta({ mid, delta }) {
         return this.minMaxHues([ c360(mid - delta), c360(mid), c360(mid + delta) ])
     }
 
+    // Conputes the maximum and minimum J, M and h of an Array of colors
     minMaxJMhColors(colors) {
         const J = colors.map(c => c.J).reduce(this.linearMinMaxReducer, {})
         const M = colors.map(c => c.M).reduce(this.linearMinMaxReducer, {})
@@ -96,54 +105,57 @@ class Colors {
         return { J, M, h }
     }
 
-    isColorMatchingName(c, needle) {
-        return lc(c.name) === lc(needle) || lc(c.hex) === lc(needle)
-    }
-
-    isColorMatchingSearch(c, needle) {
-        return lc(c.name).indexOf(lc(needle)) > -1
-    }
-
+    // checks if value is within a range defined by minimum and maximum (inclusive)
     isInsideLinearRange(x, q) {
-        return (x >= q.min) && (x <= q.max)
+        return (x >= q.min) && (x <= q.max + EPSILON)
     }
 
+    // checks if value is within a range defined by minimum and maximum (inclusive and 0 to 360)
     isInsideCircularRange(x, q) {
-        return (q.min <= q.max) ? this.isInsideLinearRange(x, q) : (x >= q.min) || (x <= q.max) 
+        return (q.min <= q.max) ? this.isInsideLinearRange(x, q) : (x >= q.min) || (x <= q.max + EPSILON) 
     }
 
+    // Creates a function that can check if a color matches all the constraints of a query object. Can be used in Array.filter(fn)
+    // 'J', 'M' or 'h' can be checked for values within a range (min to max) or (mid +/- delta)
+    // 'search' can check for any name that includes the needle
+    // 'name' can check for an exact match on the colors name or hex value
     isColorMatchingQueryFn({ J, M, h, search, name }) {
         const Jq = (J && J.mid && J.delta) ? this.minMaxLinearDelta(J) : J
         const Mq = (M && M.mid && M.delta) ? this.minMaxLinearDelta(M) : M
         const hq = (h && h.mid && h.delta) ? this.minMaxCircularDelta(h) : h
+        const needle = (search) ? lc(search) : (name) ? lc(name) : null
         return c => ! (
             ((Jq && Jq.min && Jq.max) && ! this.isInsideLinearRange(c.J, Jq)) ||
             ((Mq && Mq.min && Mq.max) && ! this.isInsideLinearRange(c.M, Mq)) ||
             ((hq && hq.min && hq.max) && ! this.isInsideCircularRange(c.h, hq)) ||
-            ((search) && ! this.isColorMatchingSearch(c, search)) ||
-            ((name) && ! this.isColorMatchingName(c, name))
+            ((search) && ! (lc(c.name).indexOf(needle) > -1)) ||
+            ((name) && ! (lc(c.name) === needle || lc(c.hex) === needle))
         )
     }
 
-    // linearRange(obj) {
-    //     // calculate the min and max based on midpoint +/- delta
-    //     if (obj.mid && obj.delta) {
-    //         obj.min -= obj.delta
-    //         obj.max += obj.delta
-    //     }
-    //     // calculate the step size
-    //     if (obj.n) {
-    //         obj.step = (obj.min === obj.max) ? 10 : (obj.max - obj.min) / obj.n
-    //     }
-    //     return obj
-    // }
+    // Creates an array of numbers progressing from min up to max depending on 'step' | 'n' | 'rotate'. 
+    // A 'step' defines how far apart each number is from the previous number, excludes the max value
+    // An 'n' defines the how many numbers to return in the array, includes the max value
+    // A 'rotate' is similar to step but returns 0-360 numbers. max can be 350 and min 10 to rotate past 0'
+    range({ min, max, step, n, rotate }) {
+        if (step) {
+            n = Math.abs(Math.ceil((max - min) / step))
+        } else if (n) {
+            step = (n > 1) ? (max - min) / (n - 1) : 100
+        } else if (rotate) {
+            const range = (max > min) ? max - min : max + 360 - min
+            step = rotate
+            n = Math.abs(Math.ceil(range / step))
+        }
+        return Array(n).fill(min).map((x, y) => x + y * step).map(x => rotate? c360(x) : x)
+    }
 
     lighterColors(hex, limit = 10) {
-        const base_color = hex_to_cam16_ucs(hex)
-        const results = colornames
-            .filter(x => h - delta < x.h && x.h < h + delta)
-            .sort((x, y) => y.M - x.M)
-
+        const { J, M, h } = hex_to_cam16_ucs(hex)
+        const isMatch = this.isColorMatchingQueryFn({ J: { min: J, max: 100 }, M: { mid: M, delta: 10 }, h: { mid: h, delta: 3 } })
+        return colornames
+            .filter(isMatch)
+            .sort((x, y) => y.J - x.J)
     }
 }
 

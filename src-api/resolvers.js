@@ -20,6 +20,7 @@ module.exports = {
     },
     Color: {
       textColors: (c, _, { dataSources }) => dataSources.colors.findTextColors(c),
+      lighterColors: (c, _, { dataSources }) => dataSources.colors.lighterColors(c.hex),
     },
     Period: {
       ANNUAL: 'annual',

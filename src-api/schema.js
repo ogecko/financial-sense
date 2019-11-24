@@ -72,6 +72,9 @@ type Color {
 
   "A list of five hex codes suitable for contrasting text over the background color, in decreasing contrast"
   textColors: [String!]!
+
+  "A list of lighter colors with similar hue and colorfulness"
+  lighterColors: [Color]
 }
 
 type IncomeStatement {

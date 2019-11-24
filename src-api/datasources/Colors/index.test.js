@@ -107,26 +107,6 @@ describe('datasource/colors/index unit tests', () => {
         );
     });
 
-    test('isColorMatchingName can check whether color name matches a needle', () => {
-        expect(colors.isColorMatchingName(marsBrownColor, 'Mars Brown')).toEqual(true);
-    });
-
-    test('isColorMatchingName can check whether color hex matches a needle', () => {
-        expect(colors.isColorMatchingName(marsBrownColor, '#ad6242')).toEqual(true);
-    });
-
-    test('isColorMatchingName can check whether color hex does not match a needle', () => {
-        expect(colors.isColorMatchingName(marsBrownColor, '#ad62ff')).toEqual(false);
-    });
-
-    test('isColorMatchingSearch can check whether color name has a partial match', () => {
-        expect(colors.isColorMatchingSearch(marsBrownColor, 'Brow')).toEqual(true);
-    });
-
-    test('isColorMatchingSearch can check whether color name has NO partial match', () => {
-        expect(colors.isColorMatchingSearch(marsBrownColor, 'pea')).toEqual(false);
-    });
-
     test('isInsideLinearRange can check whether value is inside a linear range', () => {
         expect(colors.isInsideLinearRange(9, { min: 10, max: 20 })).toEqual(false);
         expect(colors.isInsideLinearRange(10, { min: 10, max: 20 })).toEqual(true);
@@ -162,6 +142,51 @@ describe('datasource/colors/index unit tests', () => {
         expect(isMatchingh(marsBrownColor)).toEqual(true);
         expect(isNotMatchingh(marsBrownColor)).toEqual(false);
     });
+
+    test('isColorMatchingQueryFn can check whether color name matches a needle', () => {
+        const isMatch = colors.isColorMatchingQueryFn({ name: 'Mars Brown' })
+        expect(isMatch(marsBrownColor)).toEqual(true);
+    });
+
+    test('isColorMatchingQueryFn can check whether color hex matches a needle', () => {
+        const isMatch = colors.isColorMatchingQueryFn({ name: '#ad6242' })
+        expect(isMatch(marsBrownColor)).toEqual(true);
+    });
+
+    test('isColorMatchingQueryFn can check whether color hex does not match a needle', () => {
+        const isMatch = colors.isColorMatchingQueryFn({ name: '#ad62FF' })
+        expect(isMatch(marsBrownColor)).toEqual(false);
+    });
+
+    test('isColorMatchingQueryFn can check whether color name has a partial match', () => {
+        const isMatch = colors.isColorMatchingQueryFn({ search: 'Brow' })
+        expect(isMatch(marsBrownColor)).toEqual(true);
+    });
+
+    test('isColorMatchingQueryFn can check whether color name has NO partial match', () => {
+        const isMatch = colors.isColorMatchingQueryFn({ search: 'pea' })
+        expect(isMatch(marsBrownColor)).toEqual(false);
+    });
+
+    test('range creates an array of numbers progressing from min up to, but not including, max', () => {
+        expect(colors.range({ min: 10, max: 15, step: 2 })).toEqual([10, 12, 14]);
+    });
+
+    test('range creates an array of 2 evenly spaced numbers from min to max inclusive', () => {
+        expect(colors.range({ min: 10, max: 20, n: 2 })).toEqual([10, 20]);
+    });
+
+    test('range creates an array of 11 evenly spaced numbers from min to max inclusive', () => {
+        expect(colors.range({ min: 10, max: 20, n: 11 })).toEqual([10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+    });
+
+    test('range creates an array of numbers rotating from min up to, but not including, max, for circular numbers', () => {
+        expect(colors.range({ min: 350, max: 10.1, rotate: 5 })).toEqual([350, 355, 0, 5, 10]);
+    });
+
+    // test('isLighterColors can return a bunch of lighter colors', () => {
+    //     expect(colors.lighterColors(marsBrownColor.hex).map(c => c.name)).toEqual('a')
+    // });
 
 
 })
