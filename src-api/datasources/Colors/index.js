@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const { hex_to_cam16_ucs, JMh_to_hex, is_hex_code } = require('./cam16')
+const { hex_to_cam16_ucs, JMh_to_hex, JMH_to_JuMuab, is_hex_code } = require('./cam16')
 
 // Read in all the colornames and append the CAM16 values
 const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
@@ -10,6 +10,7 @@ const c360 = h => (h + 360) % 360
 const isCircularTopOnly = (hT, hB) => (hT.min && hT.max && !hB.min && !hB.max)
 const isCircularBottomOnly = (hT, hB) => (!hT.min && !hT.max && hB.min && hB.max)
 const isCircularRightOnly = (hT, hB) => (hB.min - hT.max) > (hT.min + 360 - hB.max)
+const deltaE = (x, y) => Math.sqrt((x.Ju - y.Ju) * (x.Ju - y.Ju) + (x.a - y.a) * (x.a - y.a) + (x.b - y.b) * (x.b - y.b))
 const EPSILON = 0.000001
 
 // lighten, darken, saturate, desaturate, rotate
@@ -94,7 +95,7 @@ class Colors {
 
     // Conputes the maximum and minimum value around a mid point with numbers between 0 and 360
     minMaxCircularDelta({ mid, delta }) {
-        return this.minMaxHues([ c360(mid - delta), c360(mid), c360(mid + delta) ])
+        return this.minMaxHues([c360(mid - delta), c360(mid), c360(mid + delta)])
     }
 
     // Conputes the maximum and minimum J, M and h of an Array of colors
@@ -112,7 +113,7 @@ class Colors {
 
     // checks if value is within a range defined by minimum and maximum (inclusive and 0 to 360)
     isInsideCircularRange(x, q) {
-        return (q.min <= q.max) ? this.isInsideLinearRange(x, q) : (x >= q.min) || (x <= q.max + EPSILON) 
+        return (q.min <= q.max) ? this.isInsideLinearRange(x, q) : (x >= q.min) || (x <= q.max + EPSILON)
     }
 
     // Creates a function that can check if a color matches all the constraints of a query object. Can be used in Array.filter(fn)
@@ -124,12 +125,12 @@ class Colors {
         const Mq = (M && M.mid && M.delta) ? this.minMaxLinearDelta(M) : M
         const hq = (h && h.mid && h.delta) ? this.minMaxCircularDelta(h) : h
         const needle = (search) ? lc(search) : (name) ? lc(name) : null
-        return c => ! (
-            ((Jq && Jq.min && Jq.max) && ! this.isInsideLinearRange(c.J, Jq)) ||
-            ((Mq && Mq.min && Mq.max) && ! this.isInsideLinearRange(c.M, Mq)) ||
-            ((hq && hq.min && hq.max) && ! this.isInsideCircularRange(c.h, hq)) ||
-            ((search) && ! (lc(c.name).indexOf(needle) > -1)) ||
-            ((name) && ! (lc(c.name) === needle || lc(c.hex) === needle))
+        return c => !(
+            ((Jq && Jq.min && Jq.max) && !this.isInsideLinearRange(c.J, Jq)) ||
+            ((Mq && Mq.min && Mq.max) && !this.isInsideLinearRange(c.M, Mq)) ||
+            ((hq && hq.min && hq.max) && !this.isInsideCircularRange(c.h, hq)) ||
+            ((search) && !(lc(c.name).indexOf(needle) > -1)) ||
+            ((name) && !(lc(c.name) === needle || lc(c.hex) === needle))
         )
     }
 
@@ -147,7 +148,29 @@ class Colors {
             step = rotate
             n = Math.abs(Math.ceil(range / step))
         }
-        return Array(n).fill(min).map((x, y) => x + y * step).map(x => rotate? c360(x) : x)
+        return Array(n).fill(min).map((x, y) => x + y * step).map(x => rotate ? c360(x) : x)
+    }
+
+    // Recursively return an arrange of objects expanding any ranges of J, M or h
+    // J can define an absolute value or a range object with min, max, step | n
+    // M can define an absolute value or a range object with min, max, step | n
+    // h can define an absolute value or a range object with min, max, rotate
+    rangeOfJMh({ J, M, h }) {
+        return _.isObject(M) ? this.range(M).map(M => this.rangeOfJMh({ J, M, h }))
+            : _.isObject(J) ? this.range(J).map(J => this.rangeOfJMh({ J, M, h }))
+                : _.isObject(h) ? this.range(h).map(h => this.rangeOfJMh({ J, M, h }))
+                    : { J, M, h }
+    }
+
+    // Pick the closest named color to the given J, M, h
+    pickColor({ J, M, h }, delta = 1) {
+        const c1 = JMH_to_JuMuab({ J, M, h })                // convert target to uniform color space
+        const isMatch = this.isColorMatchingQueryFn({ J: { mid: J, delta }, M: { mid: M, delta }, h: { mid: h, delta } })
+        const candidates = this.colornames
+            .filter(isMatch)                                // filter to colors around the target space
+            .map(c2 => ({ ...c2, deltaE: deltaE(c1, c2) })) // calculate DeltaE for each candidate
+            .sort((x, y) => x.deltaE - y.deltaE)            // sort by increasing DeltaE
+        return (candidates.length > 0) ? candidates[0] : this.pickColor({ J, M, h }, delta * 2)
     }
 
     lighterColors(hex, limit = 10) {

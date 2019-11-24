@@ -198,18 +198,28 @@ const xyz_to_cam16 = function xyz_to_cam16(XYZ) {
         s = 50 * Math.sqrt(c * alpha / (A_w + 4)); // saturation
     return { J, Q, C, M, s, h }
 }
-// Convert XYZ value to CAM16 Uniform Color Space components
-// XYZ - Array[3 x 1] where XYZ tristimulus values (under standard illuminant D65, normalized so that the luminance of the display white is Yw = 100Y)
-// CAM16UCS - Object with CAM16 components Ju: lightness , Mu: colorfulness, a: magenta-teal, b: yellow-blue }
-const xyz_to_cam16_ucs = function xyz_to_cam16_ucs(XYZ) {
-    let { J, Q, C, M, s, h } = xyz_to_cam16(XYZ), h_rad = radians(h);
-    Mu = Math.log(1 + 0.0228 * M) / 0.0228;
+
+// Convert JMh to Ju, Mu, a and b
+const JMH_to_JuMuab = function JMH_to_JuMuab({ J, M, h }) {
+    const h_rad = radians(h);
+    const Mu = Math.log(1 + 0.0228 * M) / 0.0228;
     return {
-        J, Q, C, M, s, h,
         Ju: 1.7 * J / (1 + 0.007 * J),
         Mu,
         a: Mu * Math.cos(h_rad),
         b: Mu * Math.sin(h_rad)
+    };
+}
+
+// Convert XYZ value to CAM16 Uniform Color Space components
+// XYZ - Array[3 x 1] where XYZ tristimulus values (under standard illuminant D65, normalized so that the luminance of the display white is Yw = 100Y)
+// CAM16UCS - Object with CAM16 components Ju: lightness , Mu: colorfulness, a: magenta-teal, b: yellow-blue }
+const xyz_to_cam16_ucs = function xyz_to_cam16_ucs(XYZ) {
+    const { J, Q, C, M, s, h } = xyz_to_cam16(XYZ)
+    const { Ju, Mu, a, b } = JMH_to_JuMuab({ J, M, h })
+    return {
+        J, Q, C, M, s, h,
+        Ju, Mu, a, b
     };
 }
 // Convert CSS RGB Hex value to CAM16 components
@@ -364,6 +374,7 @@ module.exports = {
     Jsh_to_hex,
 
     // Utility functions
+    JMH_to_JuMuab,
     is_hex_code,
     deltaE,
     srgb_in_gamut,

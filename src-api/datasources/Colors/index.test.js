@@ -1,9 +1,7 @@
 const Colors = require('./index')
 const colors = new Colors()
-const marsBrownColor = {
-    name: 'Mars Brown', hex: '#ad6242',
-    J: 40.28, M: 33.60, h: 40.68
-}
+const marsBrownJMh = { J: 40.28881859208339, M: 33.603245246341054, h: 40.68152541215197 }
+const marsBrownColor = { name: 'Mars Brown', hex: '#ad6242', ...marsBrownJMh }
 
 describe('datasource/colors/index unit tests', () => {
 
@@ -182,6 +180,46 @@ describe('datasource/colors/index unit tests', () => {
 
     test('range creates an array of numbers rotating from min up to, but not including, max, for circular numbers', () => {
         expect(colors.range({ min: 350, max: 10.1, rotate: 5 })).toEqual([350, 355, 0, 5, 10]);
+    });
+
+    test('rangeOfJMh creates an array of 5 evenly spaced colors with differing hue', () => {
+        expect(colors.rangeOfJMh({ J: 20, M:6, h: { min: 350, max: 10.1, rotate: 5 }}))
+            .toEqual([{J: 20, M: 6, h: 350}, {J: 20, M: 6, h: 355}, {J: 20, M: 6, h: 0}, {J: 20, M: 6, h: 5}, {J: 20, M: 6, h: 10}]);
+    });
+
+    test('rangeOfJMh creates an array of 3 evenly spaced colors with differing colorfulness, undefined hue', () => {
+        expect(colors.rangeOfJMh({ J: 50, M: { min: 10, max: 12, n: 3 }}))
+            .toEqual([{ J: 50, M: 10 }, { J: 50, M: 11 }, { J: 50, M: 12 }]);
+    });
+
+    test('rangeOfJMh creates an array of 3 evenly spaced colors with differing colorfulness', () => {
+        expect(colors.rangeOfJMh({ J: 50, M: { min: 10, max: 12, n: 3 }, h: 270  }))
+            .toEqual([{ J: 50, M: 10, h: 270 }, { J: 50, M: 11, h: 270 }, { J: 50, M: 12, h: 270 }]);
+    });
+
+    test('rangeOfJMh creates three arrays of a sequence of 2 evenly spaced colors with differing lightness and colorfulness', () => {
+        expect(colors.rangeOfJMh({ J: { min: 80, max: 90, n: 2 }, M: { min: 10, max: 12, n: 3 }, h: 270 }))
+            .toEqual([
+                [{"J": 80, "M": 10, "h": 270}, {"J": 90, "M": 10, "h": 270}], 
+                [{"J": 80, "M": 11, "h": 270}, {"J": 90, "M": 11, "h": 270}], 
+                [{"J": 80, "M": 12, "h": 270}, {"J": 90, "M": 12, "h": 270}]
+            ]);
+    });
+
+    test('pickColor selects a named color closest to JMh', () => {
+        expect(colors.pickColor({ J: 50, M: 20, h: 81 }).name).toEqual('Fall Harvest');
+    });
+
+    test('pickColor selects a named color closest to Mars Brown', () => {
+        expect(colors.pickColor(marsBrownJMh).name).toEqual('Mars Brown');
+    });
+
+    test('pickColor selects a named color closest to white', () => {
+        expect(colors.pickColor({ J: 100, M: 0, h: 209 }).name).toEqual('White');
+    });
+
+    test('pickColor selects a named color closest to black', () => {
+        expect(colors.pickColor({ J: 0, M: 0, h: 0 }).name).toEqual('Black');
     });
 
     // test('isLighterColors can return a bunch of lighter colors', () => {
