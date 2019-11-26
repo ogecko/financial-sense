@@ -4,10 +4,16 @@
       <q-popup-proxy transition-show="scale" transition-hide="scale" >
         <q-card bordered :style="{ maxWidth: '660px', background: this.color.hex, color: this.color.textColors[4] }">
           <q-card-section>
-              <div class="col-12 text-h2 text-weight-bold">{{color.name}}</div>
-              <div class="col-12 text-subtitle2 text-right"
-                :style="{ color: this.color.textColors[5] }">
-                {{color.hex}}
+              <div class="row q-col-gutter-xs">
+                <div class="col-10 text-h2 text-weight-bold">{{color.name}}</div>
+                <div class="col-2 text-subtitle2 text-right"
+                  :style="{ color: this.color.textColors[5] }">
+                  Hex: {{color.hex}}<br>
+                  Hue: {{color.h | fmt_n1d}}<br>
+                  Lightness: {{color.J | fmt_n1d}}<br>
+                  Colorful: {{color.M | fmt_n1d}}<br>
+
+                </div>
               </div>
             <q-input
               v-model="search"
@@ -34,7 +40,12 @@
                 </div>
               </div>
           </q-card-section>
-
+          <ColorPaletteSection label="Darker" :basecolor="color" :colors="color.darkerColors" @change="value=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Lighter" :basecolor="color" :colors="color.lighterColors" @change="value=$event" />
+          <ColorPaletteSection label="Stronger" :basecolor="color" :colors="color.strongerColors" @change="value=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Weaker" :basecolor="color" :colors="color.weakerColors" @change="value=$event" />
+          <ColorPaletteSection label="Warmer" :basecolor="color" :colors="color.warmerColors" @change="value=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Cooler" :basecolor="color" :colors="color.coolerColors" @change="value=$event" />
         </q-card>
       </q-popup-proxy>
     </q-btn>
@@ -44,12 +55,14 @@
 <script>
 import gql from 'graphql-tag'
 import { layoutColors } from '../cards/colorCalcs'
+import ColorPaletteSection from '../cardsections/ColorPaletteSection'
 
 export default {
   name: 'colorPicker',
   props: {
     hex: { type: String }
   },
+  components: { ColorPaletteSection },
   apollo: {
     color: {
       query: gql`
@@ -64,6 +77,12 @@ export default {
             C
             s
             textColors
+            lighterColors { hex name textColors }
+            darkerColors { hex name textColors }
+            strongerColors { hex name textColors }
+            weakerColors { hex name textColors }
+            warmerColors { hex name textColors }
+            coolerColors { hex name textColors }
           }
         }
       `,

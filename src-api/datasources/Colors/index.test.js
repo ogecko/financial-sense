@@ -239,8 +239,8 @@ describe('datasource/colors/index unit tests', () => {
         expect(colors.pickColor({ J: 0, M: 0, h: 0 }).name).toEqual('Black');
     });
 
-    // test('isLighterColors can return a bunch of lighter colors', () => {
-    //     expect(colors.lighterColors(marsBrownColor.hex).map(c => c.name)).toEqual('a')
+    // test('darkerColors can return a bunch of darker colors', () => {
+    //     expect(colors.darkerColors('#99ccff').map(c => c.name)).toEqual('a')
     // });
 
 

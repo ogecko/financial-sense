@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const { hex_to_cam16_ucs, JMh_to_hex, JMH_to_JuMuab, is_hex_code } = require('./cam16')
+const { hex_to_cam16_ucs, hex_to_cam16, JMH_to_JuMuab, is_hex_code } = require('./cam16')
 
 // Read in all the colornames and append the CAM16 values
 const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
@@ -173,54 +173,45 @@ class Colors {
         return (candidates.length > 0) ? candidates[0] : this.pickColor({ J, M, h }, delta * 2)
     }
 
+    // Return an Array of unique colors, expanding any ranges for J, M or h
+    rangeOfColors({ J, M, h }) {
+        const colors = this.rangeOfJMh({ J, M, h }).map(c => this.pickColor(c))
+        return _.uniqBy(colors, c => c.hex).slice(1)
+    }
+
     lighterColors(hex, limit = 10) {
-        const { J, M, h } = hex_to_cam16_ucs(hex)
-        const isMatch = this.isColorMatchingQueryFn({ J: { min: J, max: 100 }, M: { mid: M, delta: 10 }, h: { mid: h, delta: 3 } })
-        return colornames
-            .filter(isMatch)
-            .sort((x, y) => y.J - x.J)
+        const { J, M, h } = hex_to_cam16(hex)
+        return this.rangeOfColors({ J: { start: J, stop: J+20, n: limit }, M, h })
     }
 
     darkerColors(hex, limit = 10) {
-        const { J, M, h } = hex_to_cam16_ucs(hex)
-        return this.rangeJMh({ J: { min: 0, max: J, n: 10 }, M, h }).map(c => this.pickColor(c))
+        const { J, M, h } = hex_to_cam16(hex)
+        return this.rangeOfColors({ J: { start: J, stop: J-20, n: limit }, M, h })
     }
+
+    strongerColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        return this.rangeOfColors({ J, M: { start: M, stop: M+20, n: limit }, h })
+    }
+
+    weakerColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        return this.rangeOfColors({ J, M: { start: M, stop: M-20, n: limit }, h })
+    }
+
+    warmerColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        const rotate = (J < 180) ? +5 : -5
+        return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
+    }
+
+    coolerColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        const rotate = (J < 180) ? -5 : +5
+        return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
+    }
+
 }
 
 module.exports = Colors;
-
-// const color = process.argv[2] || '#FF0000'
-// console.log('input hex', color)
-// console.log('input RGB', hex_to_srgb(color))
-// console.log('input XYZ', srgb_to_xyz(hex_to_srgb(color)))
-// const cam16 = hex_to_cam16_ucs(color)
-// // const cam16 = { J: 98, M: 2, h: 209}
-// console.log('cam16', cam16)
-// console.log('output XYZ',JMh_to_xyz(cam16))
-// console.log('output RGB',xyz_to_srgb(JMh_to_xyz(cam16)))
-// console.log('output hex', JMh_to_hex(cam16))
-
-// const colornames = []
-
-// for (var R=0; R<256; R++) {
-//     for (var G=0; G<256; G++) {
-//         for (var B=0; B<256; B++) {
-//             const hex1 = '#' + (1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)
-//             colornames.push({ hex1, ...hex_to_cam16_ucs(hex1) })
-//         }
-//     }
-// }
-
-
-
-// find the max colorfulness (and implied lightness) for a given hue
-// const results = colornames.filter(x => x.h<120 && x.h>119).sort((y,x)=> x.M - y.M)
-
-// find a color by lightness
-// const results = colornames.sort((x,y)=> x.J - y.J)
-
-// find the closest named color based on JMh
-
-// console.log(results[0], results[1], results[2])
-// console.log('output hex', JMh_to_hex({J: 90.689  , M: 40, h: 119.7}))
 

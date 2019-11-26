@@ -75,6 +75,21 @@ type Color {
 
   "A list of lighter colors with similar hue and colorfulness"
   lighterColors: [Color]
+
+  "A list of darker colors with similar hue and colorfulness"
+  darkerColors: [Color]
+
+  "A list of more colorful colors with similar hue and lightness"
+  strongerColors: [Color]
+
+  "A list of more colorful colors with similar hue and lightness"
+  weakerColors: [Color]
+
+  "A list of warmer colors with similar colorfulness and lightness"
+  warmerColors: [Color]
+
+  "A list of cooler colors with similar colorfulness and lightness"
+  coolerColors: [Color]
 }
 
 type IncomeStatement {
