@@ -26,6 +26,8 @@ module.exports = {
       weakerColors: (c, _, { dataSources }) => dataSources.colors.weakerColors(c.hex),
       warmerColors: (c, _, { dataSources }) => dataSources.colors.warmerColors(c.hex),
       coolerColors: (c, _, { dataSources }) => dataSources.colors.coolerColors(c.hex),
+      triadicColors: (c, _, { dataSources }) => dataSources.colors.triadicColors(c.hex),
+      tetradicColors: (c, _, { dataSources }) => dataSources.colors.tetradicColors(c.hex),
     },
     Period: {
       ANNUAL: 'annual',

@@ -46,6 +46,8 @@
           <ColorPaletteSection label="Weaker" :basecolor="color" :colors="color.weakerColors" @change="value=$event" />
           <ColorPaletteSection label="Warmer" :basecolor="color" :colors="color.warmerColors" @change="value=$event" class="q-pb-xs" />
           <ColorPaletteSection label="Cooler" :basecolor="color" :colors="color.coolerColors" @change="value=$event" />
+          <ColorPaletteSection label="Triadic" :basecolor="color" :colors="color.triadicColors" @change="value=$event" />
+          <ColorPaletteSection label="Tetradic" :basecolor="color" :colors="color.tetradicColors" @change="value=$event" />
         </q-card>
       </q-popup-proxy>
     </q-btn>
@@ -83,6 +85,8 @@ export default {
             weakerColors { hex name textColors }
             warmerColors { hex name textColors }
             coolerColors { hex name textColors }
+            triadicColors { hex name textColors }
+            tetradicColors { hex name textColors }
           }
         }
       `,

@@ -211,6 +211,24 @@ class Colors {
         return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
     }
 
+    triadicColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        return _.concat(
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 9 }, M, h: c360(h - 120) }),
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 12 }, M, h }),
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 9 }, M, h: c360(h + 120) }),
+        )
+    }
+
+    tetradicColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        return _.concat(
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 9 }, M, h: c360(h - 90) }),
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 12 }, M, h: c360(h - 180) }),
+            this.rangeOfColors({ J: { start: J-20, stop: J+21, step: 9 }, M, h: c360(h + 90) }),
+        )
+    }
+
 }
 
 module.exports = Colors;
