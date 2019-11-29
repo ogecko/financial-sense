@@ -201,13 +201,13 @@ class Colors {
 
     warmerColors(hex, limit = 10) {
         const { J, M, h } = hex_to_cam16(hex)
-        const rotate = (J < 180) ? +5 : -5
+        const rotate = (20 < h && h < 200) ? -5 : +5
         return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
     }
 
     coolerColors(hex, limit = 10) {
         const { J, M, h } = hex_to_cam16(hex)
-        const rotate = (J < 180) ? -5 : +5
+        const rotate = (20 < h && h < 200) ? +5 : -5
         return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
     }
 
