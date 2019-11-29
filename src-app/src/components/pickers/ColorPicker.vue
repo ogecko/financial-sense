@@ -29,7 +29,7 @@
           </q-card-section>
           <q-card-section>
               <div class="row q-col-gutter-xs">
-                <div v-for="c in colors" :key="c.hex" @click="value=c.hex" class="col-1">
+                <div v-for="c in colors" :key="c.hex" @click="localvalue=c.hex" class="col-1">
                   <div
                     class="q-pa-xs shadow-1 text-weight-light"
                     :class="{ 'inset-shadow': (c.hex===color.hex) }"
@@ -40,14 +40,14 @@
                 </div>
               </div>
           </q-card-section>
-          <ColorPaletteSection label="Darker" :basecolor="color" :colors="color.darkerColors" @change="value=$event" class="q-pb-xs" />
-          <ColorPaletteSection label="Lighter" :basecolor="color" :colors="color.lighterColors" @change="value=$event" />
-          <ColorPaletteSection label="Stronger" :basecolor="color" :colors="color.strongerColors" @change="value=$event" class="q-pb-xs" />
-          <ColorPaletteSection label="Weaker" :basecolor="color" :colors="color.weakerColors" @change="value=$event" />
-          <ColorPaletteSection label="Warmer" :basecolor="color" :colors="color.warmerColors" @change="value=$event" class="q-pb-xs" />
-          <ColorPaletteSection label="Cooler" :basecolor="color" :colors="color.coolerColors" @change="value=$event" />
-          <ColorPaletteSection label="Triadic" :basecolor="color" :colors="color.triadicColors" @change="value=$event" />
-          <ColorPaletteSection label="Tetradic" :basecolor="color" :colors="color.tetradicColors" @change="value=$event" />
+          <ColorPaletteSection label="Darker" :basecolor="color" :colors="color.darkerColors" @change="localvalue=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Lighter" :basecolor="color" :colors="color.lighterColors" @change="localvalue=$event" />
+          <ColorPaletteSection label="Stronger" :basecolor="color" :colors="color.strongerColors" @change="localvalue=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Weaker" :basecolor="color" :colors="color.weakerColors" @change="localvalue=$event" />
+          <ColorPaletteSection label="Warmer" :basecolor="color" :colors="color.warmerColors" @change="localvalue=$event" class="q-pb-xs" />
+          <ColorPaletteSection label="Cooler" :basecolor="color" :colors="color.coolerColors" @change="localvalue=$event" />
+          <ColorPaletteSection label="Triadic" :basecolor="color" :colors="color.triadicColors" @change="localvalue=$event" />
+          <ColorPaletteSection label="Tetradic" :basecolor="color" :colors="color.tetradicColors" @change="localvalue=$event" />
         </q-card>
       </q-popup-proxy>
     </q-btn>
@@ -62,7 +62,7 @@ import ColorPaletteSection from '../cardsections/ColorPaletteSection'
 export default {
   name: 'colorPicker',
   props: {
-    hex: { type: String }
+    value: { type: String }
   },
   components: { ColorPaletteSection },
   apollo: {
@@ -92,7 +92,7 @@ export default {
       `,
       variables () {
         return {
-          hex: this.value
+          hex: this.localvalue
         }
       }
     },
@@ -123,11 +123,15 @@ export default {
   },
   data () {
     return {
+      localvalue: this.value,
       search: 'rose',
-      value: this.hex,
       color: { textColors: [] },
       colors: []
     }
+  },
+  watch: {
+    localvalue: function (val) { this.$emit('input', val) }
+
   }
 }
 </script>
