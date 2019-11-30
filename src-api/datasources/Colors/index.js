@@ -26,6 +26,11 @@ class Colors {
             throw new Error(
                 'color find by name sort field must be J, M, h, s, C, Q, Ju or Mu.');
         }
+        if (! _.isString(needle)) {
+            throw new Error(
+                'color search must be a string.');
+        }
+        if (needle.length < 2) return []
         const isMatch = this.isColorMatchingQueryFn({ search: needle })
         return this.colornames
             .filter(isMatch)
@@ -209,6 +214,15 @@ class Colors {
         const { J, M, h } = hex_to_cam16(hex)
         const rotate = (20 < h && h < 200) ? +5 : -5
         return this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit-1)*rotate), rotate } })
+    }
+
+    analogousColors(hex, limit = 10) {
+        const { J, M, h } = hex_to_cam16(hex)
+        const rotate = 5
+        return _.concat(
+            this.rangeOfColors({ J, M, h: { start: c360(h - (limit/2+2)*rotate), stop: h, rotate } }),
+            this.rangeOfColors({ J, M, h: { start: h, stop: c360(h + (limit/2+2)*rotate), rotate } })
+        )
     }
 
     triadicColors(hex, limit = 10) {

@@ -6,7 +6,7 @@
           </div>
           <div v-for="c in colors" :key="c.hex" @click="$emit('change',c.hex)" class="col-1 ">
               <div
-              class="q-pa-xs shadow-1 text-weight-light"
+              class="q-pa-xs shadow-1 text-weight-light cursor-pointer"
               style="font-size: 0.65rem; height: 2.4rem; overflow: hidden; line-height: 1.2"
               :class="{ 'inset-shadow': (c.hex===basecolor.hex) }"
               :style="{ background: c.hex, color: c.textColors[0] }">

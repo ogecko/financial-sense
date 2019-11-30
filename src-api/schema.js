@@ -91,6 +91,9 @@ type Color {
   "A list of cooler colors with similar colorfulness and lightness"
   coolerColors: [Color]
 
+  "A list of cooler and warmer colors with similar colorfulness and lightness"
+  analogousColors: [Color]
+
   "A list of colors from the triadic color scheme composed of three colors evenly spaced on the color wheel"
   triadicColors: [Color]
 

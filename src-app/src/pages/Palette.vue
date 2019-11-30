@@ -2,7 +2,7 @@
   <div class="q-pa-xs bg-blue-grey-10 text-white">
     <q-btn-group>
       <ColorPicker v-for="(c, index) in palettes[3]" :key="index" :value="c" />
-      <ColorPicker value="Allura Red" />
+      <ColorPicker value="#ff6236" />
       <ColorPicker value="Pale Ale" />
       <ColorPicker value="#245878" />
       <ColorPicker value="#de7e5d" />
