@@ -1,9 +1,12 @@
 const _ = require('lodash')
-
+const typeDefs = require('./schema')
+const resolvers = require('./resolvers')
 const { hex_to_cam16_ucs, hex_to_cam16, JMH_to_JuMuab, is_hex_code } = require('./cam16')
 
 // Read in all the colornames and append the CAM16 values
-const colornames = require('./colornames').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
+const colornames = require('./data').map(({ name, hex }) => ({ name, hex, ...hex_to_cam16_ucs(hex) }))
+
+// Utility functions
 const range = (start, stop, step = 1) => Array(Math.abs(Math.ceil((stop - start) / step))).fill(start).map((x, y) => x + y * step)
 const lc = s => s.toLowerCase(s)
 const c360 = h => (h + 360) % 360
@@ -13,7 +16,6 @@ const isCircularRightOnly = (hT, hB) => (hB.min - hT.max) > (hT.min + 360 - hB.m
 const deltaE = (x, y) => Math.sqrt((x.Ju - y.Ju) * (x.Ju - y.Ju) + (x.a - y.a) * (x.a - y.a) + (x.b - y.b) * (x.b - y.b))
 const EPSILON = 0.000001
 
-// lighten, darken, saturate, desaturate, rotate
 
 class Colors {
     constructor() {
@@ -245,5 +247,8 @@ class Colors {
 
 }
 
-module.exports = Colors;
-
+module.exports = {
+    ds: Colors,
+    typeDefs,
+    resolvers,
+  }

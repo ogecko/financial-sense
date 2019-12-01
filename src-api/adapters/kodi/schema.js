@@ -32,6 +32,8 @@ type Movie {
   set: String
   setid: Int
   imdbnumber: String
-}`
+}
+
+`;
 
 module.exports = typeDefs;
