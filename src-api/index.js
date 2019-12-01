@@ -3,6 +3,7 @@ const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 const Financials = require('./datasources/Financials');
 const Colors = require('./datasources/Colors');
+const Kodi = require('./datasources/Kodi');
 
 const server = new ApolloServer({ 
     typeDefs,
@@ -10,6 +11,7 @@ const server = new ApolloServer({
     dataSources: () => ({
         financials: new Financials(),
         colors: new Colors(),
+        kodi: new Kodi(),
     }),
     formatError: error => {
         console.log(error);
