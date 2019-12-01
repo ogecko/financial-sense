@@ -8,7 +8,6 @@ extend type Query {
     equityList: [EquityListItem]!
     equityProfile(ticker: String!): EquityProfile
     equityProfiles(tickers: [String]!): [EquityProfile]
-    incomeStatement(ticker: String!, period: Period): [IncomeStatement]
 }
 
 type Equity implements Node {

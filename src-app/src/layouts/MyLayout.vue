@@ -73,6 +73,14 @@
             <q-item-label>Themes</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/movies">
+          <q-item-section avatar>
+            <q-icon name="list" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Movies</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 

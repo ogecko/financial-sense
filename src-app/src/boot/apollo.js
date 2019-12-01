@@ -5,7 +5,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
 
 const httpLink = new HttpLink({
-  uri: process.env.VUE_APP_GRAPHQL_ENDPOINT || 'http://localhost:4000/'
+  uri: process.env.VUE_APP_GRAPHQL_ENDPOINT || 'http://192.168.2.85:4000/'
 })
 
 // Error Handling
