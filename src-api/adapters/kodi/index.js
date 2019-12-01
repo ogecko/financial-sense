@@ -1,6 +1,8 @@
 const { RESTDataSource } = require('apollo-datasource-rest')
-const { videoFieldsMovie } = require('./apidata')
-const movieReducer = require('./movieReducer')
+const { videoFieldsMovie } = require('./metadata')
+const { movieReducer } = require('./reducers')
+const typeDefs = require('./schema')
+const resolvers = require('./resolvers')
 
 class Kodi extends RESTDataSource {
   constructor() {
@@ -48,4 +50,8 @@ class Kodi extends RESTDataSource {
 
 }
 
-module.exports = Kodi;
+module.exports = {
+  ds: Kodi,
+  typeDefs,
+  resolvers,
+}

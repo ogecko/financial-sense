@@ -3,8 +3,6 @@ module.exports = {
       equity: (_, { ticker }, __) => ({ id: ticker, ticker }),
       color: (_, { hex }, { dataSources }) => dataSources.colors.findByName(hex),
 
-      movie: (_, { movieid }, { dataSources }) => dataSources.kodi.getMovie(movieid),
-      movies: (_, { start, limit }, { dataSources }) => dataSources.kodi.getMovieList(start, limit),
       equityList: (_, __, { dataSources }) => dataSources.financials.getEquityList(),
       equityProfile: (_, { ticker }, { dataSources }) => dataSources.financials.getEquityProfile({ ticker }),
       equityProfiles: (_, { tickers }, { dataSources }) => dataSources.financials.getEquityProfiles({ tickers }),

@@ -5,8 +5,6 @@ type Query {
     node(id: ID!): Node
     equity(ticker: String!): Equity
     color(hex: String!): Color
-    movie(movieid: Int!): Movie
-    movies(start: Int, limit: Int): [Movie]
 
     equityList: [EquityListItem]!
     equityProfile(ticker: String!): EquityProfile
@@ -15,33 +13,6 @@ type Query {
 
     findColor(needle: String!, limit: Float, sort: String, decr: Boolean): [Color]
   }
-
-type Movie {
-  id: ID!
-  movieid: Int
-  title: String
-  label: String
-  plot: String
-  genre: [String]
-  dateadded: String
-  lastplayed: String
-  studio: [String]
-  director: [String]
-  writer: [String]
-  country: [String]
-  file: String
-  runtime: Int
-  thumbnail: String
-  tagline: String
-  year: Int
-  mpaa: String
-  rating: Float
-  userrating: Float
-  votes: String
-  set: String
-  setid: Int
-  imdbnumber: String
-}
 
 interface Node {
   id: ID!
