@@ -1,7 +1,7 @@
 const { RESTDataSource } = require('apollo-datasource-rest');
-const equityListReducer = require('./equityListReducer');
-const equityProfileReducer = require('./equityProfileReducer');
-const incomeStatementReducer = require('./incomeStatementReducer');
+const { equityListReducer, equityProfileReducer, incomeStatementReducer } = require('./reducers');
+const typeDefs = require('./schema')
+const resolvers = require('./resolvers')
 
 class Financials extends RESTDataSource {
   constructor() {
@@ -41,4 +41,9 @@ class Financials extends RESTDataSource {
   
 }
 
-module.exports = Financials;
+
+module.exports = {
+  ds: Financials,
+  typeDefs,
+  resolvers,
+}

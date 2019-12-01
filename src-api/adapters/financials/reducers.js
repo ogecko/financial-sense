@@ -1,5 +1,35 @@
+function equityListReducer(equityListItem) {
+    return {
+      ticker: equityListItem.symbol,
+      name: equityListItem.name,
+      price: Number.parseFloat(equityListItem.price)
+    };
+}
 
-module.exports = function incomeStatementReducer(ticker, period, is) {
+function equityProfileReducer(equityProfile) {
+    return {
+        ticker: equityProfile.symbol,
+        exchange: equityProfile.profile.exchange,
+        name: equityProfile.profile.companyName,
+        ceo: equityProfile.profile.ceo,
+        description: equityProfile.profile.description,
+        industry: equityProfile.profile.industry,
+        sector: equityProfile.profile.sector,
+        website: equityProfile.profile.website,
+        image: equityProfile.profile.image,
+        range: equityProfile.profile.range,
+        price: Number.parseFloat(equityProfile.profile.price),
+        beta: Number.parseFloat(equityProfile.profile.beta),
+        volumeAvg: Number.parseFloat(equityProfile.profile.volAvg),
+        marketCap: Number.parseFloat(equityProfile.profile.mktCap),
+        lastDividend: Number.parseFloat(equityProfile.profile.lastDiv),
+        change: Number.parseFloat(equityProfile.profile.changes),
+        changePercent: Number.parseFloat(equityProfile.profile.changesPercentage),
+    };
+}
+
+
+function incomeStatementReducer(ticker, period, is) {
     const n = field => Number.parseFloat(is[field])
     return {
         ticker,
@@ -38,4 +68,11 @@ module.exports = function incomeStatementReducer(ticker, period, is) {
         earningsBeforeTaxMargin: n('Earnings Before Tax Margin'),
         netProfitMargin: n('Net Profit Margin'),
     };
+}
+
+
+module.exports = {
+    equityListReducer, 
+    equityProfileReducer,
+    incomeStatementReducer,
 }
