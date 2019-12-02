@@ -8,10 +8,10 @@ const routes = [
       { path: 'equity/:ticker?', component: () => import('pages/Equity.vue') },
       { path: 'portfolio', component: () => import('pages/Portfolio.vue') },
       { path: 'palette', component: () => import('pages/Palette.vue') },
-      { path: 'home', component: () => import('pages/Home.vue') },
-      { path: 'movies', component: () => import('pages/Movies.vue') }
+      { path: 'home', component: () => import('pages/Home.vue') }
     ]
-  }
+  },
+  { path: '/movies', component: () => import('pages/Movies.vue') }
 ]
 
 // Always leave this as last one
