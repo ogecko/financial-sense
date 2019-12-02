@@ -7,6 +7,10 @@ extend type Query {
   movies(start: Int, limit: Int): [Movie]
 }
 
+extend type Mutation {
+  playMovie(movieid: Int!): String
+}
+
 type Movie {
   id: ID!
   movieid: Int

@@ -48,6 +48,19 @@ class Kodi extends RESTDataSource {
     return movieReducer(response.result.moviedetails)
   }
 
+  async playMovie(movieid) {
+    const requestbody = {
+        "jsonrpc": "2.0",
+        "id": "PlayMovie",
+        "method": "Player.Open",
+        "params": {
+          "item" : { "movieid": movieid },
+        }
+      }
+    const response = await this.post('jsonrpc', requestbody);
+    return response.result
+  }
+
 }
 
 module.exports = {

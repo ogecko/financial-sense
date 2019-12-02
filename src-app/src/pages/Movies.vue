@@ -62,7 +62,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions class="bg-blue-grey-10">
-            <q-btn flat>Play</q-btn>
+            <q-btn flat @click="play(movie.movieid)">Play</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1)">List 1</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2)">List 2</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3)">List 3</q-btn>
@@ -177,6 +177,12 @@ export default {
       } else {
         this.list(num).splice(index, 1)
       }
+    },
+    play (id) {
+      this.$apollo.mutate({
+        mutation: gql`mutation ($id: Int!) { playMovie( movieid: $id) }`,
+        variables: { id }
+      })
     },
     tileClass (id) {
       return (id === this.movie.movieid) ? 'q-pa-xs bg-primary' : 'q-ma-xs bg-blue-grey-10'
