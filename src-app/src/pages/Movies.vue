@@ -41,13 +41,15 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above elevated content-class="bg-grey-10">
-      <q-card class="q-ma-xs">
-          <img :src="movie.thumbnail" />
+    <q-drawer v-model="leftDrawerOpen" :width="400" show-if-above elevated content-class="bg-grey-10">
+      <q-card class="q-ma-xs bg-blue-grey-9">
+          <div class="q-pa-lg"></div>
+          <img class="q-pa-sm bg-blue-grey-8" :src="movie.thumbnail" />
           <q-card-section class="bg-blue-grey-9">
             <div class="text-h6">{{ movie.title }} ({{movie.year}})</div>
             <div class="text-caption q-pb-md">{{ movie.tagline }}</div>
-            <div class="text-subtitle2">Rating: {{ movie.ratingadj |fmt_n1d }} ({{movie.votes | fmt_n0d }} votes)</div>
+            <div class="text-subtitle2"><span>Rating: {{ movie.ratingadj |fmt_n1d }} ({{movie.votes | fmt_n0d }} votes)</span>
+            </div>
           <q-separator />
             <div class="text-caption q-pb-md">{{ movie.plot }}</div>
             <div class="text-weight-light">MPAA: {{ movie.mpaa }}</div>
@@ -61,11 +63,12 @@
             <div class="text-caption text-weight-light">{{ movie.file }}</div>
           </q-card-section>
           <q-separator />
-          <q-card-actions class="bg-blue-grey-10">
+          <q-card-actions class="fixed-top bg-blue-grey-10">
             <q-btn flat @click="play(movie.movieid)">Play</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1)">List 1</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2)">List 2</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3)">List 3</q-btn>
+            <q-btn flat type="a" :href="`http://imdb.com/title/${movie.imdbnumber}/parentalguide`" target="_blank" />
           </q-card-actions>
       </q-card>
     </q-drawer>
