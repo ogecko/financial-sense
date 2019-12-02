@@ -5,7 +5,7 @@
         <q-btn size="md" flat round dense icon="menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>Kodi Movies</q-toolbar-title>
+        <q-toolbar-title>Kodi Movies {{moviesCountDisplay}}</q-toolbar-title>
           <q-input
             v-model="needle"
             debounce="500"
@@ -64,7 +64,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions class="fixed-top bg-blue-grey-10">
-            <q-btn flat @click="play(movie.movieid)">Play</q-btn>
+            <q-btn flat @click="playMovie(movie.movieid)">Play</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1)">List 1</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2)">List 2</q-btn>
             <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3)">List 3</q-btn>
@@ -77,12 +77,12 @@
         <div class="q-pa-xs">
             <div class="row justify-center q-col-gutter-xs">
             <div v-for="movie in moviesFiltered" :key="movie.movieid" class="col-1">
-                <q-card :class="tileClass(movie.movieid)" @click="selectMovie(movie.movieid)">
-                <img :src="movie.thumbnail" />
-                <q-card-section hidden class="bg-blue-grey-10">
-                    <div class="text-h6">{{ movie.title }}</div>
-                    <div class="text-subtitle2">Rating: {{ movie.rating |fmt_n1d }}</div>
-                </q-card-section>
+                <q-card :class="tileClass(movie.movieid)" @click="selectMovie(movie.movieid)" @dblclick="playMovie(movie.movieid)">
+                  <img :src="movie.thumbnail" />
+                  <q-card-section hidden class="bg-blue-grey-10">
+                      <div class="text-h6">{{ movie.title }}</div>
+                      <div class="text-subtitle2">Rating: {{ movie.rating |fmt_n1d }}</div>
+                  </q-card-section>
                 </q-card>
             </div>
             </div>
@@ -193,7 +193,7 @@ export default {
         this.list(num).splice(index, 1)
       }
     },
-    play (id) {
+    playMovie (id) {
       this.$apollo.mutate({
         mutation: gql`mutation ($id: Int!) { playMovie( movieid: $id) }`,
         variables: { id }
@@ -214,6 +214,10 @@ export default {
             : (vm.getNDays(vm.needle) > 0) ? vm.movies.filter(m => vm.isWithinLastNDays(vm.needle, m.dateadded))
               : (vm.needle.length > 2) ? vm.movies.filter(m => vm.searchableContent(m).indexOf(lc(vm.needle)) > -1)
                 : vm.movies
+    },
+    moviesCountDisplay: vm => {
+      return (vm.movies.length === vm.moviesFiltered.length) ? `(${vm.movies.length})`
+        : `(${vm.moviesFiltered.length} of ${vm.movies.length})`
     }
   },
   data () {
