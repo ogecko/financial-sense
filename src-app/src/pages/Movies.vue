@@ -19,7 +19,7 @@
             </template>
           </q-input>
 
-        <q-btn size="md" flat round icon="update" @click="needle='Last 7 days'"><q-tooltip>Filter by Latest</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="update" @click="setLastNDays()"><q-tooltip>Filter by Latest</q-tooltip></q-btn>
         <q-btn size="md" flat round icon="favorite" @click="needle='Romance'"><q-tooltip>Filter by Romance</q-tooltip></q-btn>
         <q-btn size="md" flat round icon="eco" @click="needle='France'"><q-tooltip>Filter by France</q-tooltip></q-btn>
         <q-btn size="md" flat round icon="android" @click="needle='Sci'"><q-tooltip>Filter by Science Fiction</q-tooltip></q-btn>
@@ -173,6 +173,18 @@ export default {
     isOnList (num, title = this.movie.title) {
       return this.list(num).includes(title)
     },
+    getNDays (needle) {
+      return /^Last \d+ days$/.test(needle) ? Number(needle.slice(5, -4)) : -1
+    },
+    isWithinLastNDays (needle, dateadded) {
+      const n = this.getNDays(needle)
+      return (n > 0) ? (date.getDateDiff(Date.now(), Date.parse(dateadded), 'days') < n + 1) : false
+    },
+    setLastNDays () {
+      const n = this.getNDays(this.needle)
+      const m = (n > 0) ? Math.ceil(n * 1.3) : 2
+      this.needle = `Last ${m} days`
+    },
     toggleList (num, title = this.movie.title) {
       const index = this.list(num).indexOf(title)
       if (index < 0) {
@@ -199,7 +211,7 @@ export default {
       return (vm.needle === 'List 1') ? vm.movies.filter(m => vm.isOnList(1, m.title))
         : (vm.needle === 'List 2') ? vm.movies.filter(m => vm.isOnList(2, m.title))
           : (vm.needle === 'List 3') ? vm.movies.filter(m => vm.isOnList(3, m.title))
-            : (/^Last .+ days/.test(vm.needle)) ? vm.movies.filter(m => date.getDateDiff(Date.now(), Date.parse(m.dateadded), 'days') < Number(vm.needle.slice(5, -4)))
+            : (vm.getNDays(vm.needle) > 0) ? vm.movies.filter(m => vm.isWithinLastNDays(vm.needle, m.dateadded))
               : (vm.needle.length > 2) ? vm.movies.filter(m => vm.searchableContent(m).indexOf(lc(vm.needle)) > -1)
                 : vm.movies
     }
