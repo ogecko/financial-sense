@@ -13,6 +13,7 @@ const fmtncs = v => isNaN(v) ? null : i18nncs.format(v)
 const fmtn2d = v => isNaN(v) ? null : i18nn2d.format(v)
 const fmtn1d = v => isNaN(v) ? null : i18nn1d.format(v)
 const fmtn0d = v => isNaN(v) ? null : i18nn0d.format(v)
+const fmtarr = v => Array.isArray(v) ? v.join(', ') : v
 
 // Register filter functions with Vue
 export default ({ _, Vue }) => {
@@ -21,4 +22,5 @@ export default ({ _, Vue }) => {
   Vue.filter('fmt_n2d', fmtn2d)
   Vue.filter('fmt_n1d', fmtn1d)
   Vue.filter('fmt_n0d', fmtn0d)
+  Vue.filter('fmt_arr', fmtarr)
 }

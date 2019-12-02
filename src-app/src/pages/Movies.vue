@@ -5,12 +5,27 @@
         <q-btn size="md" flat round dense icon="menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-
         <q-toolbar-title>Kodi Movies</q-toolbar-title>
-        <q-btn size="md" flat round icon="local_movies"><q-tooltip>Filter by Genre</q-tooltip></q-btn>
-        <q-btn size="md" flat round icon="filter_1"><q-tooltip>Filter using List 1</q-tooltip></q-btn>
-        <q-btn size="md" flat round icon="filter_2"><q-tooltip>Filter using List 2</q-tooltip></q-btn>
-        <q-btn size="md" flat round icon="filter_3"><q-tooltip>Filter using List 3</q-tooltip></q-btn>
+          <q-input
+            v-model="needle"
+            debounce="500"
+            filled dense
+            placeholder="Search for movies">
+            <template v-slot:before>
+              <q-icon name="search" />
+            </template>
+            <template v-slot:append>
+              <q-icon v-if="needle !== ''" name="close" @click="needle = ''" class="cursor-pointer" />
+            </template>
+          </q-input>
+
+        <q-btn size="md" flat round icon="update" @click="needle='Last 7 days'"><q-tooltip>Filter by Latest</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="favorite" @click="needle='Romance'"><q-tooltip>Filter by Romance</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="eco" @click="needle='France'"><q-tooltip>Filter by France</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="android" @click="needle='Sci'"><q-tooltip>Filter by Science Fiction</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="filter_1" @click="needle='List 1'"><q-tooltip>Filter using List 1</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="filter_2" @click="needle='List 2'"><q-tooltip>Filter using List 2</q-tooltip></q-btn>
+        <q-btn size="md" flat round icon="filter_3" @click="needle='List 3'"><q-tooltip>Filter using List 3</q-tooltip></q-btn>
 
         <q-btn
           size="md"
@@ -36,19 +51,21 @@
           <q-separator />
             <div class="text-caption q-pb-md">{{ movie.plot }}</div>
             <div class="text-weight-light">MPAA: {{ movie.mpaa }}</div>
-            <div class="text-weight-light">Country: {{ movie.country.join(',') }}</div>
-            <div class="text-weight-light">Studio: {{ movie.studio.join(',') }}</div>
-            <div class="text-weight-light">Director: {{ movie.director.join(',') }}</div>
-            <div class="text-weight-light q-pb-md">Writer: {{ movie.writer.join(',') }}</div>
+            <div class="text-weight-light">Genre: {{ movie.genre | fmt_arr }}</div>
+            <div class="text-weight-light">Country: {{ movie.country | fmt_arr }}</div>
+            <div class="text-weight-light">Studio: {{ movie.studio | fmt_arr }}</div>
+            <div class="text-weight-light">Director: {{ movie.director | fmt_arr }}</div>
+            <div class="text-weight-light q-pb-md">Writer: {{ movie.writer | fmt_arr }}</div>
             <div class="text-caption text-weight-light">Runtime: {{ movie.runtime/60 | fmt_n0d }} min</div>
+            <div class="text-caption text-weight-light">Added: {{ movie.dateadded }}</div>
             <div class="text-caption text-weight-light">{{ movie.file }}</div>
           </q-card-section>
           <q-separator />
           <q-card-actions class="bg-blue-grey-10">
             <q-btn flat>Play</q-btn>
-            <q-btn flat>List 1</q-btn>
-            <q-btn flat>List 2</q-btn>
-            <q-btn flat>List 3</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1)">List 1</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2)">List 2</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3)">List 3</q-btn>
           </q-card-actions>
       </q-card>
     </q-drawer>
@@ -56,7 +73,7 @@
     <q-page-container>
         <div class="q-pa-xs">
             <div class="row justify-center q-col-gutter-xs">
-            <div v-for="movie in movies" :key="movie.movieid" class="col-1">
+            <div v-for="movie in moviesFiltered" :key="movie.movieid" class="col-1">
                 <q-card :class="tileClass(movie.movieid)" @click="selectMovie(movie.movieid)">
                 <img :src="movie.thumbnail" />
                 <q-card-section hidden class="bg-blue-grey-10">
@@ -73,6 +90,9 @@
 
 <script>
 import gql from 'graphql-tag'
+import { date } from 'quasar'
+const lc = s => s.toLowerCase(s)
+const jc = a => Array.isArray(a) ? a.join() : a
 
 export default {
   name: 'movies',
@@ -120,8 +140,14 @@ export default {
           movies(start: $start, limit: $limit) {
             movieid
             title
+            tagline
+            plot
+            genre
             thumbnail
             rating
+            country
+            director
+            dateadded
           }
         }
       `,
@@ -138,21 +164,47 @@ export default {
       this.id = id
       this.leftDrawerOpen = true
     },
-    toggleList (num) {
+    list (num) {
+      return [null, this.list1, this.list2, this.list3][num]
+    },
+    isOnList (num, title = this.movie.title) {
+      return this.list(num).includes(title)
+    },
+    toggleList (num, title = this.movie.title) {
+      const index = this.list(num).indexOf(title)
+      if (index < 0) {
+        this.list(num).push(title)
+      } else {
+        this.list(num).splice(index, 1)
+      }
     },
     tileClass (id) {
       return (id === this.movie.movieid) ? 'q-pa-xs bg-primary' : 'q-ma-xs bg-blue-grey-10'
+    },
+    searchableContent (m) {
+      return lc(m.title + m.tagline + m.plot + jc(m.genre) + jc(m.country) + jc(m.director))
+    }
+  },
+  computed: {
+    moviesFiltered: vm => {
+      return (vm.needle === 'List 1') ? vm.movies.filter(m => vm.isOnList(1, m.title))
+        : (vm.needle === 'List 2') ? vm.movies.filter(m => vm.isOnList(2, m.title))
+          : (vm.needle === 'List 3') ? vm.movies.filter(m => vm.isOnList(3, m.title))
+            : (/^Last .+ days/.test(vm.needle)) ? vm.movies.filter(m => date.getDateDiff(Date.now(), Date.parse(m.dateadded), 'days') < Number(vm.needle.slice(5, -4)))
+              : (vm.needle.length > 2) ? vm.movies.filter(m => vm.searchableContent(m).indexOf(lc(vm.needle)) > -1)
+                : vm.movies
     }
   },
   data () {
     return {
       leftDrawerOpen: true,
-      movies: [],
-      movie: {},
+      needle: '',
+      list1: ['Whiplash', 'Shutter Island', 'Walt Disney', 'The Truman Show', 'Free Solo', 'Her', '12 Years a Slave', 'Gone with the Wind', 'Spotlight', 'The Straight Story', 'Going Clear: Scientology and the Prison of Belief', 'All Three of Us', 'Black Narcissus', 'The Big Blue', 'Remi Nobody\'s Boy', 'Boyhood', 'Gandhi', 'Breathe', 'Woman in Gold', 'Brooklyn', 'The Secret Scripture', 'The Man Who Knew Infinity', 'Borg vs McEnroe', 'Calvary', 'Fierce Creatures'],
+      list2: ['Ragnarok', 'How to See a Black Hole: The Universe\'s Greatest Mystery', 'The Bridge on the River Kwai', 'Wings of Desire', 'The Hateful Eight', 'Children of Men', 'I Origins', 'Thor: Ragnarok', 'The Revenant', 'Rogue One: A Star Wars Story', 'Star Wars: The Force Awakens', 'Blade Runner 2049', 'Apocalypto', 'The Thin Red Line', 'The 12th Man', 'Wonder Woman', 'Frozen', 'Taken', 'The Big Short', 'Army of Darkness', 'John Wick', 'Rise of the Planet of the Apes', 'What Happened to Monday', 'Enron: The Smartest Guys in the Room', 'Star Wars: The Last Jedi', 'Sunshine', 'Passengers', 'The Walk', 'Kundun', 'The Killing of a Sacred Deer', 'Highlander', 'The Hunger Games: Mockingjay - Part 1', 'The Hunger Games: Mockingjay - Part 2', 'Independence Day', 'Into the White', 'World War Z', 'Chappie', 'Star Trek Beyond', 'Underworld', 'Deepwater Horizon', '9', 'Conan the Barbarian', 'The X Files', 'RED', 'In the Heart of the Sea', 'Oblivion', 'Cloverfield', 'Prometheus', 'Elysium', 'Green Zone'],
+      list3: ['Spirited Away', 'Howl\'s Moving Castle', 'My Neighbor Totoro', 'Castle in the Sky', 'Kiki\'s Delivery Service', 'The Wind Rises', 'Ponyo', 'Lupin the Third: The Castle of Cagliostro', 'Coco', 'Song of the Sea', 'The Tale of the Princess Kaguya', 'The Boy and the Beast', 'Mulan', 'When Marnie Was There', 'Finding Nemo', 'Big Hero 6', 'Kubo and the Two Strings', 'Ernest & Celestine', 'The Secret World of Arrietty', 'Mary and the Witch\'s Flower', 'From Up on Poppy Hill', 'The Red Turtle', 'Moana', 'Tangled', 'Summer Wars', 'Long Way North', 'Finding Dory', 'Brave', 'Ramen Shop'],
       id: 3001,
-      list1: [],
-      list2: [],
-      list3: []
+      movie: {},
+      movies: []
     }
   }
 }
