@@ -27,6 +27,7 @@ type Movie {
   year: Int
   mpaa: String
   rating: Float
+  ratingadj: Float
   userrating: Float
   votes: String
   set: String

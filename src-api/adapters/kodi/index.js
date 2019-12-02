@@ -31,7 +31,7 @@ class Kodi extends RESTDataSource {
           }
         }
     const response = await this.post('jsonrpc', requestbody);
-    return response.result.movies.map(m => movieReducer(m))
+    return response.result.movies.map(m => movieReducer(m)).sort((a,b)=> b.ratingadj - a.ratingadj)
   }
   
   async getMovie(movieid) {

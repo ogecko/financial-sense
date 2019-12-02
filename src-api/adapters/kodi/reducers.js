@@ -5,7 +5,8 @@ function movieReducer(movie) {
                       .replace(/^smb:.*/,'img/quasar-logo-full.svg')
     return {
       ...movie,
-      thumbnail: uri(movie.thumbnail)
+      thumbnail: uri(movie.thumbnail),
+      ratingadj: movie.rating - 2.33*0.871609/(Math.sqrt(movie.votes?movie.votes:1))    // 98% Lower Confidence of avg - Z*sd/sqrt(n)
     };
 }
 
