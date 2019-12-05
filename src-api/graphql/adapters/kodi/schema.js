@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
 
@@ -19,6 +19,14 @@ type Movie {
   plot: String
   genre: [String]
   dateadded: String
+  daterec: String
+  channel: String
+  channelurl: String
+  path: String
+  drive: String
+  media: String
+  dirname: String
+  filename: String
   lastplayed: String
   studio: [String]
   director: [String]

@@ -58,8 +58,11 @@
             <div class="text-weight-light">Studio: {{ movie.studio | fmt_arr }}</div>
             <div class="text-weight-light">Director: {{ movie.director | fmt_arr }}</div>
             <div class="text-weight-light q-pb-md">Writer: {{ movie.writer | fmt_arr }}</div>
+            <q-img class="q-pa-sm float-right bg-white rounded-borders" :src="movie.channelurl" style="max-width: 80px"/>
             <div class="text-caption text-weight-light">Runtime: {{ movie.runtime/60 | fmt_n0d }} min</div>
-            <div class="text-caption text-weight-light">Added: {{ movie.dateadded }}</div>
+            <div class="text-caption text-weight-light">Recorded: {{ movie.daterec | fmt_ago }}</div>
+            <div class="text-caption text-weight-light">On Channel: {{ movie.channel }}</div>
+            <div class="text-caption q-pb-md text-weight-light">Directory: {{ movie.media }}/{{ movie.dirname }}</div>
             <div class="text-caption text-weight-light">{{ movie.file }}</div>
           </q-card-section>
           <q-separator />
@@ -128,6 +131,11 @@ export default {
             set
             setid
             imdbnumber
+            channel
+            channelurl
+            daterec
+            media
+            dirname
           }
         }
       `,
@@ -222,7 +230,7 @@ export default {
   },
   data () {
     return {
-      leftDrawerOpen: true,
+      leftDrawerOpen: false,
       needle: '',
       list1: ['Whiplash', 'Shutter Island', 'Walt Disney', 'The Truman Show', 'Free Solo', 'Her', '12 Years a Slave', 'Gone with the Wind', 'Spotlight', 'The Straight Story', 'Going Clear: Scientology and the Prison of Belief', 'All Three of Us', 'Black Narcissus', 'The Big Blue', 'Remi Nobody\'s Boy', 'Boyhood', 'Gandhi', 'Breathe', 'Woman in Gold', 'Brooklyn', 'The Secret Scripture', 'The Man Who Knew Infinity', 'Borg vs McEnroe', 'Calvary', 'Fierce Creatures'],
       list2: ['Ragnarok', 'How to See a Black Hole: The Universe\'s Greatest Mystery', 'The Bridge on the River Kwai', 'Wings of Desire', 'The Hateful Eight', 'Children of Men', 'I Origins', 'Thor: Ragnarok', 'The Revenant', 'Rogue One: A Star Wars Story', 'Star Wars: The Force Awakens', 'Blade Runner 2049', 'Apocalypto', 'The Thin Red Line', 'The 12th Man', 'Wonder Woman', 'Frozen', 'Taken', 'The Big Short', 'Army of Darkness', 'John Wick', 'Rise of the Planet of the Apes', 'What Happened to Monday', 'Enron: The Smartest Guys in the Room', 'Star Wars: The Last Jedi', 'Sunshine', 'Passengers', 'The Walk', 'Kundun', 'The Killing of a Sacred Deer', 'Highlander', 'The Hunger Games: Mockingjay - Part 1', 'The Hunger Games: Mockingjay - Part 2', 'Independence Day', 'Into the White', 'World War Z', 'Chappie', 'Star Trek Beyond', 'Underworld', 'Deepwater Horizon', '9', 'Conan the Barbarian', 'The X Files', 'RED', 'In the Heart of the Sea', 'Oblivion', 'Cloverfield', 'Prometheus', 'Elysium', 'Green Zone'],

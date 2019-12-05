@@ -1,3 +1,5 @@
+import { date } from 'quasar'
+
 // Boot function to register a bunch of Vue filters for number formatting
 
 // Internationalisation Number Format functions
@@ -14,6 +16,20 @@ const fmtn2d = v => isNaN(v) ? null : i18nn2d.format(v)
 const fmtn1d = v => isNaN(v) ? null : i18nn1d.format(v)
 const fmtn0d = v => isNaN(v) ? null : i18nn0d.format(v)
 const fmtarr = v => Array.isArray(v) ? v.join(', ') : v
+const fmtago = v => {
+  const d = Date.parse(v)
+  const n = Date.now()
+  const hours = date.getDateDiff(n, d, 'hours')
+  const days = date.getDateDiff(n, d, 'days')
+  const weeks = date.getDateDiff(n, d, 'weeks')
+  const months = date.getDateDiff(n, d, 'months')
+  const years = date.getDateDiff(n, d, 'years')
+  return (hours < 48) ? `${hours} hours ago`
+    : (days < 14) ? `${days} days ago`
+      : (weeks < 8) ? `${weeks} weeks ago`
+        : (months < 24) ? `${months} months ago`
+          : `${years} years ago`
+}
 
 // Register filter functions with Vue
 export default ({ _, Vue }) => {
@@ -23,4 +39,5 @@ export default ({ _, Vue }) => {
   Vue.filter('fmt_n1d', fmtn1d)
   Vue.filter('fmt_n0d', fmtn0d)
   Vue.filter('fmt_arr', fmtarr)
+  Vue.filter('fmt_ago', fmtago)
 }

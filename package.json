@@ -4,8 +4,12 @@
   "description": "Financial Visualisation and Analysis",
   "main": "index.js",
   "scripts": {
-    "dev": "node src-api/index.js",
-    "test": "jest --watch"
+    "dev": "nodemon src-api/index.js",
+    "test": "jest --watch",
+    "testes": "npm run eslint && npm run jest",
+    "eslint": "eslint src-api/. --config .eslintrc.json",
+    "start": "node src-api/index.js",
+    "jest": "jest  --forceExit"
   },
   "repository": {
     "type": "git",
@@ -18,11 +22,30 @@
   },
   "homepage": "https://github.com/ogecko/financial-sense#readme",
   "dependencies": {
+    "@feathersjs/authentication": "^4.4.1",
+    "@feathersjs/authentication-local": "^4.4.1",
+    "@feathersjs/authentication-oauth": "^4.4.1",
+    "@feathersjs/configuration": "^4.4.1",
+    "@feathersjs/errors": "^4.4.1",
+    "@feathersjs/express": "^4.4.1",
+    "@feathersjs/feathers": "^4.4.1",
+    "@feathersjs/socketio": "^4.4.1",
+    "@feathersjs/transport-commons": "^4.4.1",
     "apollo-datasource-rest": "^0.6.9",
-    "apollo-server": "^2.9.12",
-    "lodash": "^4.17.15"
+    "apollo-server-express": "^2.9.12",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "feathers-nedb": "^5.1.0",
+    "helmet": "^3.21.2",
+    "lodash": "^4.17.15",
+    "nedb": "^1.8.0",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "axios": "^0.19.0",
+    "eslint": "^6.7.2",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4"
   }
 }

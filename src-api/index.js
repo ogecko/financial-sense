@@ -1,31 +1,14 @@
-const _ = require('lodash')
-const { ApolloServer } = require('apollo-server');
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
-const financials = require('./adapters/financials');
-const colors = require('./adapters/colors');
-const kodi = require('./adapters/kodi');
+/* eslint-disable no-console */
+const logger = require('./logger');
+const app = require('./app');
+const hostname = app.get('host');
+const port = app.get('port');
+const server = app.listen(port, hostname);
 
-const adapters = [ kodi, colors, financials ]
+process.on('unhandledRejection', (reason, p) =>
+  logger.error('Unhandled Rejection at: Promise ', p, reason)
+);
 
-const server = new ApolloServer({ 
-    typeDefs: [typeDefs, ...adapters.map(x => x.typeDefs)],
-    resolvers: _.merge(resolvers, ...adapters.map(x => x.resolvers)),
-    dataSources: () => ({
-        financials: new financials.ds(),
-        colors: new colors.ds(),
-        kodi: new kodi.ds(),
-    }),
-    formatError: error => {
-        console.log(error);
-        return error;
-    },
-    formatResponse: response => {
-        console.log(response.data);
-        return response;
-    },   
-});
-
-server.listen().then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`);
-});
+server.on('listening', () =>
+  logger.info('Feathers application started on http://%s:%d', hostname, port)
+);
