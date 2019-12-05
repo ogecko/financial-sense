@@ -58,7 +58,7 @@
             <div class="text-weight-light">Studio: {{ movie.studio | fmt_arr }}</div>
             <div class="text-weight-light">Director: {{ movie.director | fmt_arr }}</div>
             <div class="text-weight-light q-pb-md">Writer: {{ movie.writer | fmt_arr }}</div>
-            <q-img class="q-pa-sm float-right bg-white rounded-borders" :src="movie.channelurl" style="max-width: 80px"/>
+            <q-img class="q-pa-sm float-right bg-blue-grey-2 rounded-borders" :src="movie.channelurl" style="max-width: 80px"/>
             <div class="text-caption text-weight-light">Runtime: {{ movie.runtime/60 | fmt_n0d }} min</div>
             <div class="text-caption text-weight-light">Recorded: {{ movie.daterec | fmt_ago }}</div>
             <div class="text-caption text-weight-light">On Channel: {{ movie.channel }}</div>
