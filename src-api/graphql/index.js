@@ -9,28 +9,32 @@ const logger = require('../logger');
 
 const adapters = [ kodi, colors, financials ]
 
-const graphqlServer = new ApolloServer({ 
-    typeDefs: [typeDefs, ...adapters.map(x => x.typeDefs)],
-    resolvers: _.merge(resolvers, ...adapters.map(x => x.resolvers)),
-    dataSources: () => ({
-        financials: new financials.ds(),
-        colors: new colors.ds(),
-        kodi: new kodi.ds(),
-    }),
-    formatError: error => {
-        console.log(error);
-        return error;
-    },
-    formatResponse: response => {
-        // console.log(response.data);
-        return response;
-    },   
-});
-
 // Configure function to setup the graphql endpoint on the express app
 module.exports = function (app) {
+    const graphqlServer = new ApolloServer({ 
+        typeDefs: [typeDefs, ...adapters.map(x => x.typeDefs)],
+        resolvers: _.merge(resolvers, ...adapters.map(x => x.resolvers)),
+        dataSources: () => ({
+            financials: new financials.ds(),
+            colors: new colors.ds(),
+            kodi: new kodi.ds(),
+        }),
+        context: ({ req, res }) => ({
+            app, req, res
+        }),
+        formatError: error => {
+            console.log(error);
+            return error;
+        },
+        formatResponse: response => {
+            // console.log(response.data);
+            return response;
+        }
+    });
+    
+    graphqlServer.applyMiddleware({ app, path: '/graphql' })
+
     const hostname = app.get('host');
     const port = app.get('port');
     logger.info(`Graphql endpoint at http://${hostname}:${port}${graphqlServer.graphqlPath}`)
-    graphqlServer.applyMiddleware({ app })
 };

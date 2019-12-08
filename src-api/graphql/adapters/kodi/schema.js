@@ -5,10 +5,12 @@ const typeDefs = gql`
 extend type Query {
   movie(movieid: Int!): Movie
   movies(start: Int, limit: Int): [Movie]
+  getList(num: Int!): [String]
 }
 
 extend type Mutation {
   playMovie(movieid: Int!): String
+  toggleList(num: Int!, title: String): [String]
 }
 
 type Movie {

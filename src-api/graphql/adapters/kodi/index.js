@@ -61,6 +61,23 @@ class Kodi extends RESTDataSource {
     return response.result
   }
 
+  async getList (app, num) {
+    const playlists = app.service('playlists')
+    const res = await playlists.find({ query: { num } })
+    return (res.total > 0) ? res.data[0].list : []
+  }
+
+  async toggleList (app, num, title) {
+    const playlists = app.service('playlists')
+    const res = await playlists.find({ query: { num } })
+    const doc = (res.total > 0) ? res.data[0] : await playlists.create({ num, list: [] })
+    if (title) {
+      const index = doc.list.indexOf(title)
+      if (index < 0) doc.list.push(title); else doc.list.splice(index, 1)
+      playlists.update(doc._id, doc)
+    }
+    return doc.list
+  }
 }
 
 module.exports = {

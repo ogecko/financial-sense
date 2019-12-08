@@ -10,6 +10,7 @@ module.exports = function (ctx) {
       'axios',
       'apollo',
       'filters',
+      'feathers',
       'colors'
     ],
 

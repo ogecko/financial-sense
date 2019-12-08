@@ -68,9 +68,9 @@
           <q-separator />
           <q-card-actions class="fixed-top bg-blue-grey-10">
             <q-btn flat @click="playMovie(movie.movieid)">Play</q-btn>
-            <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1)">List 1</q-btn>
-            <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2)">List 2</q-btn>
-            <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3)">List 3</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(1) }" @click="toggleList(1, movie.title)">List 1</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(2) }" @click="toggleList(2, movie.title)">List 2</q-btn>
+            <q-btn flat :class="{ 'bg-primary': isOnList(3) }" @click="toggleList(3, movie.title)">List 3</q-btn>
             <q-btn flat type="a" :href="`http://imdb.com/title/${movie.imdbnumber}/parentalguide`" target="_blank" />
           </q-card-actions>
       </q-card>
@@ -103,6 +103,9 @@ const jc = a => Array.isArray(a) ? a.join() : a
 export default {
   name: 'movies',
   apollo: {
+    list1: { query: gql`{ getList(num: 1) }`, update: d => d.getList },
+    list2: { query: gql`{ getList(num: 2) }`, update: d => d.getList },
+    list3: { query: gql`{ getList(num: 3) }`, update: d => d.getList },
     movie: {
       query: gql`
         query movie($movieid: Int!) {
@@ -158,6 +161,7 @@ export default {
             rating
             country
             director
+            studio
             dateadded
           }
         }
@@ -168,6 +172,18 @@ export default {
           limit: 2300
         }
       }
+    }
+  },
+  data () {
+    return {
+      leftDrawerOpen: false,
+      needle: '',
+      id: 3001,
+      movie: {},
+      movies: [],
+      list1: [],
+      list2: [],
+      list3: []
     }
   },
   methods: {
@@ -193,25 +209,26 @@ export default {
       const m = (n > 0) ? Math.ceil(n * 1.3) : 2
       this.needle = `Last ${m} days`
     },
-    toggleList (num, title = this.movie.title) {
-      const index = this.list(num).indexOf(title)
-      if (index < 0) {
-        this.list(num).push(title)
-      } else {
-        this.list(num).splice(index, 1)
-      }
-    },
     playMovie (id) {
       this.$apollo.mutate({
         mutation: gql`mutation ($id: Int!) { playMovie( movieid: $id) }`,
         variables: { id }
       })
     },
+    async toggleList (num, title) {
+      const result = await this.$apollo.mutate({
+        mutation: gql`mutation ($num: Int!, $title: String) { toggleList( num: $num, title: $title ) }`,
+        variables: { num, title }
+      })
+      if (num === 1) this.list1 = result.data.toggleList
+      if (num === 2) this.list2 = result.data.toggleList
+      if (num === 3) this.list3 = result.data.toggleList
+    },
     tileClass (id) {
       return (id === this.movie.movieid) ? 'q-pa-xs bg-primary' : 'q-ma-xs bg-blue-grey-10'
     },
     searchableContent (m) {
-      return lc(m.title + m.tagline + m.plot + jc(m.genre) + jc(m.country) + jc(m.director))
+      return lc(m.title + m.tagline + m.plot + m.studio + jc(m.genre) + jc(m.country) + jc(m.director))
     }
   },
   computed: {
@@ -226,18 +243,6 @@ export default {
     moviesCountDisplay: vm => {
       return (vm.movies.length === vm.moviesFiltered.length) ? `(${vm.movies.length})`
         : `(${vm.moviesFiltered.length} of ${vm.movies.length})`
-    }
-  },
-  data () {
-    return {
-      leftDrawerOpen: false,
-      needle: '',
-      list1: ['Whiplash', 'Shutter Island', 'Walt Disney', 'The Truman Show', 'Free Solo', 'Her', '12 Years a Slave', 'Gone with the Wind', 'Spotlight', 'The Straight Story', 'Going Clear: Scientology and the Prison of Belief', 'All Three of Us', 'Black Narcissus', 'The Big Blue', 'Remi Nobody\'s Boy', 'Boyhood', 'Gandhi', 'Breathe', 'Woman in Gold', 'Brooklyn', 'The Secret Scripture', 'The Man Who Knew Infinity', 'Borg vs McEnroe', 'Calvary', 'Fierce Creatures'],
-      list2: ['Ragnarok', 'How to See a Black Hole: The Universe\'s Greatest Mystery', 'The Bridge on the River Kwai', 'Wings of Desire', 'The Hateful Eight', 'Children of Men', 'I Origins', 'Thor: Ragnarok', 'The Revenant', 'Rogue One: A Star Wars Story', 'Star Wars: The Force Awakens', 'Blade Runner 2049', 'Apocalypto', 'The Thin Red Line', 'The 12th Man', 'Wonder Woman', 'Frozen', 'Taken', 'The Big Short', 'Army of Darkness', 'John Wick', 'Rise of the Planet of the Apes', 'What Happened to Monday', 'Enron: The Smartest Guys in the Room', 'Star Wars: The Last Jedi', 'Sunshine', 'Passengers', 'The Walk', 'Kundun', 'The Killing of a Sacred Deer', 'Highlander', 'The Hunger Games: Mockingjay - Part 1', 'The Hunger Games: Mockingjay - Part 2', 'Independence Day', 'Into the White', 'World War Z', 'Chappie', 'Star Trek Beyond', 'Underworld', 'Deepwater Horizon', '9', 'Conan the Barbarian', 'The X Files', 'RED', 'In the Heart of the Sea', 'Oblivion', 'Cloverfield', 'Prometheus', 'Elysium', 'Green Zone'],
-      list3: ['Spirited Away', 'Howl\'s Moving Castle', 'My Neighbor Totoro', 'Castle in the Sky', 'Kiki\'s Delivery Service', 'The Wind Rises', 'Ponyo', 'Lupin the Third: The Castle of Cagliostro', 'Coco', 'Song of the Sea', 'The Tale of the Princess Kaguya', 'The Boy and the Beast', 'Mulan', 'When Marnie Was There', 'Finding Nemo', 'Big Hero 6', 'Kubo and the Two Strings', 'Ernest & Celestine', 'The Secret World of Arrietty', 'Mary and the Witch\'s Flower', 'From Up on Poppy Hill', 'The Red Turtle', 'Moana', 'Tangled', 'Summer Wars', 'Long Way North', 'Finding Dory', 'Brave', 'Ramen Shop'],
-      id: 3001,
-      movie: {},
-      movies: []
     }
   }
 }
