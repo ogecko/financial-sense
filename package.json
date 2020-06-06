@@ -32,7 +32,7 @@
     "@feathersjs/socketio": "^4.4.1",
     "@feathersjs/transport-commons": "^4.4.1",
     "apollo-datasource-rest": "^0.6.9",
-    "apollo-server-express": "^2.9.12",
+    "apollo-server-express": "^2.14.2",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "feathers-nedb": "^5.1.0",
